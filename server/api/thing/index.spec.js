@@ -1,9 +1,6 @@
 'use strict';
 
-/* globals sinon, describe, expect, it */
-
 function mockThingCtrl(){
-  console.log('using thing mock!')
   return {
     index: 'thingCtrl.index',
     show: 'thingCtrl.show',
@@ -17,7 +14,6 @@ function mockThingCtrl(){
 function mockRouter(){
   return {
     Router(){
-      console.log('using mock!')
       return {
         get: jest.fn(),
         put: jest.fn(),

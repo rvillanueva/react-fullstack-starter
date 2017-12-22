@@ -1,48 +1,50 @@
 'use strict';
 
-/* globals sinon, describe, expect, it */
-
-var proxyquire = require('proxyquire').noPreserveCache();
-
-var userCtrlStub = {
-  index: 'userCtrl.index',
-  destroy: 'userCtrl.destroy',
-  me: 'userCtrl.me',
-  changePassword: 'userCtrl.changePassword',
-  show: 'userCtrl.show',
-  create: 'userCtrl.create'
+function mockAuthService(){
+  return {
+    isAuthenticated() {
+      return 'authService.isAuthenticated';
+    },
+    hasRole(role) {
+      return `authService.hasRole.${role}`;
+    }
+  }
+}
+function mockUserCtrl(){
+  return {
+    index: 'userCtrl.index',
+    destroy: 'userCtrl.destroy',
+    me: 'userCtrl.me',
+    changePassword: 'userCtrl.changePassword',
+    show: 'userCtrl.show',
+    create: 'userCtrl.create'
+  };
 };
 
-var authServiceStub = {
-  isAuthenticated() {
-    return 'authService.isAuthenticated';
-  },
-  hasRole(role) {
-    return `authService.hasRole.${role}`;
+function mockRouter(){
+  return {
+    Router(){
+      return {
+        get: jest.fn(),
+        put: jest.fn(),
+        patch: jest.fn(),
+        post: jest.fn(),
+        delete: jest.fn()
+      }
+    }
   }
 };
 
-var routerStub = {
-  get: jest.fn(),
-  put: jest.fn(),
-  post: jest.fn(),
-  delete: jest.fn()
-};
-
 // require the index with our stubbed out modules
-var userIndex = proxyquire('./index', {
-  express: {
-    Router() {
-      return routerStub;
-    }
-  },
-  './user.controller': userCtrlStub,
-  '../../auth/auth.service': authServiceStub
-});
+jest.mock('express', () => mockRouter());
+jest.mock('./user.controller.js', () => mockUserCtrl());
+jest.mock('../../auth/auth.service', () => mockAuthService());
+
+var userIndex = require('./user.controller.js')
 
 describe('User API Router:', function() {
   it('should return an express router instance', function() {
-    expect(userIndex).toEqual(routerStub);
+    expect(userIndex).toEqual(mockUserCtrl());
   });
 /*
   describe('GET /api/users', function() {

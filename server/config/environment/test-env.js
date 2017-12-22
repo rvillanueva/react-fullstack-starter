@@ -5,6 +5,7 @@
 // ===========================
 module.exports = {
   // MongoDB connection options
+  port: 9090,
   mongo: {
     uri: 'mongodb://localhost/dev-test'
   },

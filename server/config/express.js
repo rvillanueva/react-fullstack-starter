@@ -36,7 +36,7 @@ export default function(app) {
     app.use(favicon(path.join(config.root, 'client', 'favicon.ico')));
   }
 
-  app.set('appPath', path.join(config.root, 'src'));
+  app.set('appPath', path.join(config.root, 'client'));
   app.use(express.static(app.get('appPath')));
   app.use(morgan('dev'));
 
@@ -123,7 +123,7 @@ export default function(app) {
       port: config.browserSyncPort,
       plugins: ['bs-fullscreen-message'],
       files: [
-        'src/*.html'
+        'client/*.html'
       ]
     });
 

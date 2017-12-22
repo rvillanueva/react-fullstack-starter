@@ -220,12 +220,12 @@ Nope. Redux is useful for applications with more complex data flows. If your app
  1. Run `npm run remove-demo`
  2. Uninstall Redux related packages: `npm uninstall redux react-redux redux-thunk`
  3. Create a new empty component in /components.
- 4. Call render on the new top level component you created in step 3 in src/index.js.
+ 4. Call render on the new top level component you created in step 3 in client/index.js.
 
 <a name="how-do-i-remove-react-router"></a>
 ### How do I remove React Router?
  1. Uninstall React Router and routing related packages: `npm uninstall --save react-router-dom`
- 2. Remove `import { Switch, NavLink, Route } from 'react-router-dom';` from top of `src/components/App.js`, add a reference to `src/components/FuelSavingsForm.js`, and replace body of (implicit) render with this: `<FuelSavingsPage />`.
+ 2. Remove `import { Switch, NavLink, Route } from 'react-router-dom';` from top of `client/components/App.js`, add a reference to `client/components/FuelSavingsForm.js`, and replace body of (implicit) render with this: `<FuelSavingsPage />`.
 
 <a name="how-do-i-deploy-this"></a>
 ### How do I deploy this?
@@ -280,7 +280,7 @@ This assures that the build won't break when some new version is released. Unfor
 Via <a href="https://github.com/webpack/file-loader">Webpack's file loader</a>. Example:
 
 ```
-<img src={require('./src/images/myImage.jpg')} />
+<img src={require('./client/images/myImage.jpg')} />
 
 ```
 
