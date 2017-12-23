@@ -21,6 +21,6 @@ export default function(app) {
   // All other routes should redirect to the app.html
   app.route('/*')
     .get((req, res) => {
-      res.sendFile(path.resolve(`${app.get('appPath')}/app.html`));
+      res.render(path.resolve(`${app.get('appPath')}/index`));
     });
 }

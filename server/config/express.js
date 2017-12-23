@@ -25,6 +25,17 @@ import webpackConfigDev from '../../webpack.config.dev';
 
 var MongoStore = connectMongo(session);
 
+function conditionalHistoryApiFallback(){
+  return function(req, res, next){
+    var allowedPaths = ['api', 'auth', 'components', 'app','assets'];
+    if(allowedPaths.indexOf(req.url.split('/')[1]) > -1){
+      next();
+    } else {
+      historyApiFallback()(req, res, next);
+    }
+  }
+}
+
 export default function(app) {
   var env = app.get('env');
 
@@ -37,13 +48,13 @@ export default function(app) {
   }
 
   app.set('appPath', path.join(config.root, 'client'));
-  app.use(express.static(app.get('appPath')));
+  //app.use(express.static(app.get('appPath')));
   app.use(morgan('dev'));
 
-  app.set('views', __dirname + '/views');
+  /*app.set('views', __dirname + '/views');
   app.set('view engine', 'jsx');
   app.engine('jsx', require('express-react-views').createEngine());
-
+*/
 
   app.use(compression());
   app.use(bodyParser.urlencoded({ extended: false }));
@@ -95,13 +106,12 @@ export default function(app) {
      * Run Browsersync and use middleware for Hot Module Replacement
      */
     browserSync.init({
-
       open: true,
       logFileChanges: false,
       proxy: `localhost:${config.port}`,
       ws: true,
       middleware: [
-        historyApiFallback(),
+        conditionalHistoryApiFallback(),
         webpackDevMiddleware(compiler, {
           publicPath: webpackConfigDev.output.publicPath,
           noInfo: true,
@@ -130,7 +140,7 @@ export default function(app) {
      * or send a fullscreen error message to the browser instead
      */
     compiler.plugin('done', function(stats) {
-      console.log('webpack done hook');
+      console.log('Webpack recompiled.');
       if(stats.hasErrors() || stats.hasWarnings()) {
         return browserSync.sockets.emit('fullscreen:message', {
           title: 'Webpack Error:',

@@ -1,5 +1,4 @@
-import {REQUEST_LOGIN, COMPLETE_LOGIN} from '../constants/actionTypes';
-import {necessaryDataIsProvidedToCalculateSavings, calculateSavings} from '../utils/fuelSavings';
+import {START_LOGIN, FINISH_LOGIN, UPDATE_MY_PROFILE} from '../constants/actionTypes';
 import objectAssign from 'object-assign';
 import initialState from './initialState';
 
@@ -12,15 +11,19 @@ export default function authReducer(state = initialState.auth, action) {
   let newState;
 
   switch (action.type) {
-    case REQUEST_LOGIN:
+    case START_LOGIN:
       // For this example, just simulating a save by changing date modified.
       // In a real app using Redux, you might use redux-thunk and handle the async call in fuelSavingsActions.js
-      return objectAssign({}, state, {isLogginIn: true});
+      return objectAssign({}, state, {isAuthenticating: true});
 
-    case COMPLETE_LOGIN:
+    case FINISH_LOGIN:
       newState = objectAssign({}, state);
       newState.isAuthenticating = false;
-      newState.isAuthenticated = action.token ? true : false;
+      return newState;
+
+    case UPDATE_MY_PROFILE:
+      newState = objectAssign({}, state);
+      newState.user = action.user;
       return newState;
 
     default:

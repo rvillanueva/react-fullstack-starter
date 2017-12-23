@@ -1,15 +1,12 @@
 /* Variables */
-$vin-blue: #5bb7db;
-$vin-green: #60b044;
-$vin-red: #ff0000;
+
+@import "variables";
 
 /* Styles */
 body {
   font: 14px 'Helvetica Neue', Helvetica, Arial, sans-serif;
   line-height: 1.4em;
   color: #4d4d4d;
-  min-width: 230px;
-  max-width: 550px;
   margin: 0 auto;
   -webkit-font-smoothing: antialiased;
   -moz-font-smoothing: antialiased;
@@ -23,6 +20,34 @@ td {
 
 h2 {
 	color: $vin-blue;
+}
+
+.container {
+  @include container-fixed;
+
+  @media (min-width: $screen-sm-min) {
+    width: $container-sm;
+  }
+  @media (min-width: $screen-md-min) {
+    width: $container-md;
+  }
+  @media (min-width: $screen-lg-min) {
+    width: $container-lg;
+  }
+}
+
+.navbar {
+  height: 56px;
+  padding: 18px 0;
+  box-sizing: border-box;
+  border-bottom: 2px solid rgb(240, 240, 240);
+  background-color: white;
+  & a, a:active, a:visited {
+    font-weight: bold;
+    text-decoration: none;
+    margin-right: 20px;
+    color: rgb(93, 93, 93);
+  }
 }
 
 .savings { color: $vin-green; }

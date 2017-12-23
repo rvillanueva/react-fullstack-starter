@@ -8,7 +8,7 @@ import LoginForm from '../LoginForm';
 export class LoginPage extends React.Component {
 
   login = (email, password) => {
-    this.props.actions.fetchAuthToken({email: email, password: password});
+    this.props.actions.login({email: email, password: password});
   }
 
   render() {

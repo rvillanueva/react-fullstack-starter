@@ -1,5 +1,6 @@
 import React from 'react';
 import {func, bool} from 'prop-types';
+import '../styles/login-page.scss';
 
 export class LoginForm extends React.Component {
   constructor(){
@@ -29,11 +30,16 @@ export class LoginForm extends React.Component {
 
   render() {
     return (
-      <form onSubmit={this.onSubmit}>
-        <input onChange={this.onChange} name="email" value={this.state.email} disabled={this.props.isAuthenticating}/>
-        <input onChange={this.onChange} type="password" name="password" value={this.state.password} disabled={this.props.isAuthenticating}/>
-        <input type="submit" value="Login" />
-      </form>
+      <div className="login-panel">
+        <h1>Login</h1>
+        <form onSubmit={this.onSubmit}>
+          Email: <input onChange={this.onChange} name="email" value={this.state.email} disabled={this.props.isAuthenticating}/>
+          <br />
+          Password: <input onChange={this.onChange} type="password" name="password" value={this.state.password} disabled={this.props.isAuthenticating}/>
+          <br />
+          <input type="submit" value="Login" />
+        </form>
+      </div>
     );
   }
 }
