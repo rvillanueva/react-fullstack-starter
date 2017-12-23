@@ -1,12 +1,13 @@
 /* Variables */
 
 @import "variables";
+@import "grid";
 
 /* Styles */
 body {
   font: 14px 'Helvetica Neue', Helvetica, Arial, sans-serif;
   line-height: 1.4em;
-  color: #4d4d4d;
+  color: $body-text-color;
   margin: 0 auto;
   -webkit-font-smoothing: antialiased;
   -moz-font-smoothing: antialiased;
@@ -14,26 +15,8 @@ body {
   font-weight: 300;
 }
 
-td {
-	padding: 12px;
-}
-
 h2 {
-	color: $vin-blue;
-}
-
-.container {
-  @include container-fixed;
-
-  @media (min-width: $screen-sm-min) {
-    width: $container-sm;
-  }
-  @media (min-width: $screen-md-min) {
-    width: $container-md;
-  }
-  @media (min-width: $screen-lg-min) {
-    width: $container-lg;
-  }
+	color: blue;
 }
 
 .navbar {
@@ -50,7 +33,6 @@ h2 {
   }
 }
 
-.savings { color: $vin-green; }
-.loss { color: $vin-red; }
-input.small { width: 46px; }
-td.fuel-savings-label { width: 175px; }
+.pull-right {
+  float: right;
+}

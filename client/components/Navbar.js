@@ -20,7 +20,9 @@ class Navbar extends React.Component {
           <NavLink exact to="/" activeClassName="active">Home</NavLink>
           <NavLink to="/fuel-savings" activeClassName="active">Demo App</NavLink>
           <NavLink to="/about" activeClassName="active">About</NavLink>
-          {login}{name}
+          <div className="pull-right">
+            {login}{name}
+          </div>
         </div>
       </div>
     );

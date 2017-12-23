@@ -33,19 +33,21 @@ export function login(credentials){
   }
 }
 
-export function finishLogin(){
+export function logout(){
   return function(dispatch){
-    return dispatch({
-      type: types.FINISH_LOGIN
-    })
+    cookie.remove('token');
+    history.push('/');
+    dispatch({
+      type: types.LOGOUT
+    });
   }
 }
 
-export function handleLoginError(json){
+export function handleLoginError(msg){
   return function(dispatch){
     return dispatch({
       type: types.HANDLE_LOGIN_ERROR,
-      json
+      msg
     })
   }
 }
