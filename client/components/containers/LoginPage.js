@@ -6,38 +6,16 @@ import * as actions from '../../actions/authActions';
 import LoginForm from '../LoginForm';
 
 export class LoginPage extends React.Component {
-  constructor(){
-    super();
-    this.state = {
-      email: '',
-      password: ''
-    }
-  }
 
-  onChange = e => {
-    if(e.target.name === 'email'){
-      this.setState({email: e.target.value})
-    }
-    if(e.target.name === 'password'){
-      this.setState({password: e.target.value})
-    }
-  }
-
-  login = e => {
-    e.stopPropagation();
-    e.preventDefault();
-    e.nativeEvent.stopImmediatePropagation();
-    this.props.actions.fetchAuthToken({email: this.state.email, password: this.state.password});
-    return false;
+  login = (email, password) => {
+    this.props.actions.fetchAuthToken({email: email, password: password});
   }
 
   render() {
     return (
       <LoginForm
-        onSubmit={this.login}
-        onChange={this.onChange}
-        email={this.state.email}
-        password={this.state.password}
+        login={this.login}
+        isAuthenticating={this.props.auth.isAuthenticating}
       />
     );
   }

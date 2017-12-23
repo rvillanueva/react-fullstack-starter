@@ -17,7 +17,7 @@ export default {
   },
   auth: {
     isAuthenticated: false,
-    isLoggingIn: false,
+    isAuthenticating: false,
     role: null
   }
 };

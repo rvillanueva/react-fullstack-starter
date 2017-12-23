@@ -1,5 +1,6 @@
 import * as types from '../constants/actionTypes';
 import fetch from 'cross-fetch'
+import { history } from '../store/configureStore';
 
 // example of a thunk using the redux-thunk middleware
 export function startLogin(credentials) {
@@ -15,6 +16,9 @@ export function startLogin(credentials) {
 
 export function completeLogin(json){
   return function(dispatch){
+    if(json.token){
+      history.push('/')
+    }
     return dispatch({
       type: types.COMPLETE_LOGIN,
       json
@@ -22,7 +26,7 @@ export function completeLogin(json){
   }
 }
 
-export function fetchAuthToken(credentials){
+export function fetchAuthToken(credentials, history){
   return function(dispatch){
     return fetch('/auth/local', {
       method: 'POST',
@@ -34,6 +38,6 @@ export function fetchAuthToken(credentials){
     .then(response => response.json(),
       error => console.log('An error occurred.', error)
     )
-    .then(json => dispatch(completeLogin(json)))
+    .then(json => dispatch(completeLogin(json, history)))
   }
 }

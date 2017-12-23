@@ -19,7 +19,7 @@ export default function authReducer(state = initialState.auth, action) {
 
     case COMPLETE_LOGIN:
       newState = objectAssign({}, state);
-      newState.isLoggingIn = false;
+      newState.isAuthenticating = false;
       newState.isAuthenticated = action.token ? true : false;
       return newState;
 
