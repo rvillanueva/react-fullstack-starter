@@ -14,5 +14,10 @@ export default {
       annual: 0,
       threeYear: 0
     }
+  },
+  auth: {
+    isAuthenticated: false,
+    isLoggingIn: false,
+    role: null
   }
 };
