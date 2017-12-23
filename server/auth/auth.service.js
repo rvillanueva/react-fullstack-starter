@@ -35,7 +35,8 @@ export function isAuthenticated() {
             return res.status(401).end();
           }
           req.user = user;
-          return next();
+          next();
+          return true;
         })
         .catch(err => next(err));
     });

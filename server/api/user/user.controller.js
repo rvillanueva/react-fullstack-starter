@@ -25,7 +25,7 @@ function handleError(res, statusCode) {
 export function index(req, res) {
   return User.find({}, '-salt -password').exec()
     .then(users => {
-      res.status(200).json(users);
+      return res.status(200).json(users);
     })
     .catch(handleError(res));
 }
@@ -42,7 +42,7 @@ export function create(req, res) {
       var token = jwt.sign({ _id: user._id }, config.secrets.session, {
         expiresIn: 60 * 60 * 5
       });
-      res.json({ token });
+      return res.json({ token });
     })
     .catch(validationError(res));
 }
@@ -58,7 +58,7 @@ export function show(req, res, next) {
       if(!user) {
         return res.status(404).end();
       }
-      res.json(user.profile);
+      return res.json(user.profile);
     })
     .catch(err => next(err));
 }
@@ -70,7 +70,7 @@ export function show(req, res, next) {
 export function destroy(req, res) {
   return User.findByIdAndRemove(req.params.id).exec()
     .then(function() {
-      res.status(204).end();
+      return res.status(204).end();
     })
     .catch(handleError(res));
 }
@@ -109,7 +109,7 @@ export function me(req, res, next) {
       if(!user) {
         return res.status(401).end();
       }
-      res.json(user);
+      return res.json(user);
     })
     .catch(err => next(err));
 }
