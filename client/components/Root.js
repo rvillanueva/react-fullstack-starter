@@ -1,10 +1,15 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { ConnectedRouter } from 'react-router-redux';
-import { Provider } from 'react-redux';
+import { Provider, connect } from 'react-redux';
 import App from './App';
+import {bindActionCreators} from 'redux';
+import * as authActions from '../actions/authActions';
 
-export default class Root extends Component {
+class Root extends Component {
+  componentWillMount(){
+    this.props.authActions.updateMyProfile();
+  }
   render() {
     const { store, history } = this.props;
     return (
@@ -19,5 +24,21 @@ export default class Root extends Component {
 
 Root.propTypes = {
   store: PropTypes.object.isRequired,
-  history: PropTypes.object.isRequired
+  history: PropTypes.object.isRequired,
+  authActions: PropTypes.object.isRequired
 };
+
+function mapStateToProps(state) {
+  return {
+  };
+}
+function mapDispatchToProps(dispatch) {
+  return {
+    authActions: bindActionCreators(authActions, dispatch)
+  };
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Root);
