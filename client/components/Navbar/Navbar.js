@@ -2,10 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { NavLink } from 'react-router-dom';
 import {connect} from 'react-redux';
-import * as actions from '../actions/authActions';
+import * as actions from '../../actions/authActions';
 import {bindActionCreators} from 'redux';
 import NavDropdown from './NavDropdown';
-import '../styles/navbar.scss';
+import './navbar.scss';
 
 // Since this component is simple and static, there's no parent container for it.
 class Navbar extends React.Component {

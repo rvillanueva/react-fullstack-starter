@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 export class AdminUserCard extends React.Component {
   onRoleChange(e){
-    var confirm = window.confirm(`Change ${this.props.user.name}'s role to ${e.target.value}?'`)
+    var confirm = window.confirm(`Change ${this.props.user.name}'s role to ${e.target.value}?`)
     if(confirm){
       this.props.setUserRole(this.props.user._id, e.target.value);
     }

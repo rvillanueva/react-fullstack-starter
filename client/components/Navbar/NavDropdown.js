@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { NavLink } from 'react-router-dom';
 import {connect} from 'react-redux';
-import * as actions from '../actions/authActions';
+import * as actions from '../../actions/authActions';
 import {bindActionCreators} from 'redux';
 
 class NavDropdown extends React.Component {

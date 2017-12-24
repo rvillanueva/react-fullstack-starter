@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {scrubFormatting} from '../utils/numberFormat';
+import {scrubFormatting} from '../../utils/numberFormat';
 
 const FuelSavingsResults = ({savings}) => {
   const savingsExist = scrubFormatting(savings.monthly) > 0;

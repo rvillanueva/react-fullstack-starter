@@ -1,6 +1,5 @@
 import React from 'react';
 import {func, bool} from 'prop-types';
-import '../styles/login-page.scss';
 
 export class LoginForm extends React.Component {
   constructor(){
