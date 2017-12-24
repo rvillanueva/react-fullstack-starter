@@ -1,18 +1,35 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const AdminUserCard = ({name, role, email}) => (
-  <div>
-    {name}
-    {role}
-    {email}
-  </div>
-);
+export class AdminUserCard extends React.Component {
+  onRoleChange(e){
+    var confirm = window.confirm(`Change ${this.props.user.name}'s role to ${e.target.value}?'`)
+    if(confirm){
+      this.props.setUserRole(this.props.user._id, e.target.value);
+    }
+  }
+  render(){
+    var roles = ['guest','user','admin'];
+    roles = roles.map(role => {
+      return <option value={role} key={role}>{role}</option>
+    })
+    return (
+      <div>
+        <strong>{this.props.user.name}</strong><br />
+        {this.props.user.email}
+        <div className="pull-right">
+          <select onChange={this.onRoleChange.bind(this)} value={this.props.user.role}>
+            {roles}
+          </select>
+        </div>
+      </div>
+    )
+  }
+}
 
 AdminUserCard.propTypes = {
-  name: PropTypes.string,
-  role: PropTypes.string.isRequired,
-  email: PropTypes.string
+  user: PropTypes.object.isRequired,
+  setUserRole: PropTypes.func.isRequired
 };
 
 export default AdminUserCard;

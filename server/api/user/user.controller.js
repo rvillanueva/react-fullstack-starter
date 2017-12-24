@@ -102,7 +102,7 @@ export function changePassword(req, res) {
  * Change a users role
  */
 export function changeRole(req, res) {
-  var userId = req.user._id;
+  var userId = req.params.id;
   var newRole = String(req.body.role);
   if(config.userRoles.indexOf(newRole) === -1){
     return res.status(403).send('Cannot set unknown role ' + newRole);
@@ -110,12 +110,15 @@ export function changeRole(req, res) {
 
   return User.findById(userId).exec()
     .then(user => {
-        user.role = newRole;
-        return user.save()
-          .then(() => {
-            res.status(204).end();
-          })
-          .catch(validationError(res));
+      if(!user){
+        return res.status(404).end();
+      }
+      user.role = newRole;
+      return user.save()
+        .then(() => {
+          return res.status(204).end();
+        })
+        .catch(validationError(res));
     });
 }
 

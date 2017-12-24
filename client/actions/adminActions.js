@@ -24,21 +24,29 @@ function handleSystemError(error){
 
 export function changeUserRole(userId, newRole){
   return function(dispatch){
-    return fetchAuth(`/users/${userId}/role`, {
-      method: 'PUT',
-      body: JSON.stringify({role: newRole}),
-      headers: {
-        "Content-Type": "application/json"
-      }
-    })
-    .then(parseResponse())
-    .then(json => {
-      dispatch({
-        type: types.ADMIN_UPDATE_USER_ROLE,
-        userId,
-        newRole
+    return new Promise((resolve, reject) => {
+      fetchAuth(`/api/users/${userId}/role`, {
+        method: 'PUT',
+        body: JSON.stringify({role: newRole}),
+        headers: {
+          "Content-Type": "application/json"
+        }
+      })
+      .then(res => {
+        if(res.status >= 400){
+          return Promise.reject(err);
+        }
+        dispatch({
+          type: types.ADMIN_UPDATE_USER_ROLE,
+          userId,
+          newRole
+        })
+        resolve();
+      })
+      .catch(err => {
+        dispatch(handleSystemError(err))
+        reject(err)
       })
     })
-    .catch(err => dispatch(handleSystemError(err)))
   }
 }

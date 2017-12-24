@@ -10,10 +10,14 @@ class AdminPage extends React.Component {
   componentDidMount(){
     this.props.userActions.getUsers();
   }
+  setUserRole(userId, role){
+    this.props.adminActions.changeUserRole(userId, role)
+    .then(() => this.props.userActions.getUsers())
+  }
   render() {
     var userCards = this.props.users.allIds.map(id => {
       var user = this.props.users.byId[id]
-      return <AdminUserCard key={id} name={user.name} email={user.email} role={user.role} />;
+      return <AdminUserCard key={id} user={user} setUserRole={this.setUserRole.bind(this)}/>;
     })
 
     return (
