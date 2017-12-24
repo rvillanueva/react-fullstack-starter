@@ -12,14 +12,22 @@
     margin-right: 52px;
     color: rgb(93, 93, 93);
   }
+  & .navbar-user {
+    margin-right: 20px;
+    display: inline-block
+  }
 }
 
 .nav-dropdown {
   display: inline-block;
+  position: relative;
 }
 
 .nav-dropdown-trigger {
-  pointer: cursor;
+  font-weight: bold;
+  &:hover {
+    cursor:pointer;
+  }
 }
 .nav-dropdown-content {
   position: absolute;
@@ -27,7 +35,14 @@
   border-radius: $card-border-radius;
   padding: 8px 12px;
   box-sizing:content-box;
-  display: inline-block;
-  right: 0;
   box-shadow: $card-box-shadow;
+  top: 2em;
+  left: auto;
+  right: 0;
+  & a {
+    font-weight: 400;
+    &:hover {
+      font-weight: 400;
+    }
+  }
 }

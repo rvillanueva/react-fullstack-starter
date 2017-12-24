@@ -14,16 +14,16 @@ class Navbar extends React.Component {
     var login;
     var name;
     var admin;
-    var logout;
+    var dropdown;
 
     if(!this.props.auth.user || !this.props.auth.user._id){
       login = <NavLink to="/login" activeClassName="active">Login</NavLink>
     } else {
-      name = this.props.auth.user.name
+      name = <div className="navbar-user">{this.props.auth.user.name}</div>
       if(this.props.auth.user.role === 'admin'){
         admin = <NavLink to="/admin" activeClassName="active">Admin</NavLink>
       }
-      logout = <a onClick={this.props.actions.logout}>Logout</a>
+      dropdown = <NavDropdown />
     }
     return (
       <div className="navbar">
@@ -33,8 +33,9 @@ class Navbar extends React.Component {
           <NavLink to="/about" activeClassName="active">About</NavLink>
           {admin}
           <div className="pull-right">
-            {login}{name}
-            <NavDropdown />
+            {login}
+            {name}
+            {dropdown}
           </div>
         </div>
       </div>
