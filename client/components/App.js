@@ -6,6 +6,7 @@ import { Switch, Route } from 'react-router-dom';
 import HomePage from './HomePage';
 import FuelSavingsPage from './containers/FuelSavingsPage';
 import LoginPage from './containers/LoginPage';
+import AdminPage from './containers/AdminPage';
 import AboutPage from './AboutPage';
 import NotFoundPage from './NotFoundPage';
 import Navbar from './Navbar';
@@ -25,6 +26,7 @@ class App extends React.Component {
             <Route path="/fuel-savings" component={FuelSavingsPage} />
             <Route path="/about" component={AboutPage} />
             <Route path="/login" component={LoginPage} />
+            <Route path="/admin" component={AdminPage} />
             <Route component={NotFoundPage} />
           </Switch>
         </div>

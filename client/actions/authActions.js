@@ -4,6 +4,12 @@ import fetch from 'cross-fetch';
 import { history } from '../store/configureStore';
 import cookie from 'js-cookie';
 
+function parseResponse(){
+  return function(res){
+      return res.json();
+  }
+}
+
 export function login(credentials){
   return function(dispatch){
     dispatch({
@@ -17,9 +23,7 @@ export function login(credentials){
         "Content-Type": "application/json"
       }
     })
-    .then(res => res.json(),
-      error => console.log('An error occurred.', error)
-    )
+    .then(parseResponse())
     .then(json => {
       if(json.token){
         history.push('/about')
@@ -29,6 +33,14 @@ export function login(credentials){
       } else {
         dispatch(handleLoginError())
       }
+    })
+  }
+}
+
+function finishLogin(){
+  return function(dispatch){
+    dispatch({
+      type: types.FINISH_LOGIN
     })
   }
 }
@@ -55,9 +67,7 @@ export function handleLoginError(msg){
 export function updateMyProfile(){
   return function(dispatch){
     return fetchAuth('/api/users/me')
-    .then(response => response.json(),
-      error => console.log('An error occurred.', error)
-    )
+    .then(parseResponse())
     .then(user => dispatch({
       type: types.UPDATE_MY_PROFILE,
       user

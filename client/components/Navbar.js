@@ -2,6 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { NavLink } from 'react-router-dom';
 import {connect} from 'react-redux';
+import * as actions from '../actions/authActions';
+import {bindActionCreators} from 'redux';
 
 // Since this component is simple and static, there's no parent container for it.
 class Navbar extends React.Component {
@@ -9,10 +11,16 @@ class Navbar extends React.Component {
     const activeStyle = { color: 'blue' };
     var login;
     var name;
+    var admin;
+    var logout;
     if(!this.props.auth.user || !this.props.auth.user._id){
       login = <NavLink to="/login" activeClassName="active">Login</NavLink>
     } else {
       name = this.props.auth.user.name
+      if(this.props.auth.user.role === 'admin'){
+        admin = <NavLink to="/admin" activeClassName="active">Admin</NavLink>
+      }
+      logout = <a onClick={this.props.actions.logout}>Logout</a>
     }
     return (
       <div className="navbar">
@@ -20,8 +28,9 @@ class Navbar extends React.Component {
           <NavLink exact to="/" activeClassName="active">Home</NavLink>
           <NavLink to="/fuel-savings" activeClassName="active">Demo App</NavLink>
           <NavLink to="/about" activeClassName="active">About</NavLink>
+          {admin}
           <div className="pull-right">
-            {login}{name}
+            {login}{name}{logout}
           </div>
         </div>
       </div>
@@ -41,6 +50,13 @@ function mapStateToProps(state) {
   };
 }
 
+function mapDispatchToProps(dispatch) {
+  return {
+    actions: bindActionCreators(actions, dispatch)
+  };
+}
+
 export default connect(
-  mapStateToProps
+  mapStateToProps,
+  mapDispatchToProps
 )(Navbar);

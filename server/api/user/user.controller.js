@@ -99,6 +99,28 @@ export function changePassword(req, res) {
 }
 
 /**
+ * Change a users role
+ */
+export function changeRole(req, res) {
+  var userId = req.user._id;
+  var newRole = String(req.body.role);
+  if(config.userRoles.indexOf(newRole) === -1){
+    return res.status(403).send('Cannot set unknown role ' + newRole);
+  }
+
+  return User.findById(userId).exec()
+    .then(user => {
+        user.role = newRole;
+        return user.save()
+          .then(() => {
+            res.status(204).end();
+          })
+          .catch(validationError(res));
+    });
+}
+
+
+/**
  * Get my info
  */
 export function me(req, res, next) {

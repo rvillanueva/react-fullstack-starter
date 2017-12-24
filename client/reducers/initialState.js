@@ -17,7 +17,10 @@ export default {
   },
   auth: {
     isAuthenticating: false,
-    role: null,
     user: null
+  },
+  users: {
+    byId: {},
+    allIds: []
   }
 };
