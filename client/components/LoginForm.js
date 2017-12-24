@@ -30,14 +30,18 @@ export class LoginForm extends React.Component {
 
   render() {
     return (
-      <div className="login-panel">
+      <div className="login-card card">
         <h1>Login</h1>
+        <p>Default credentials are test@example.com / test and admin@example.com / admin.</p>
         <form onSubmit={this.onSubmit}>
           Email: <input onChange={this.onChange} name="email" value={this.state.email} disabled={this.props.isAuthenticating}/>
           <br />
           Password: <input onChange={this.onChange} type="password" name="password" value={this.state.password} disabled={this.props.isAuthenticating}/>
           <br />
-          <input type="submit" value="Login" />
+          <br />
+          <div>
+            <button type="submit" className="btn btn-primary">Login</button>
+          </div>
         </form>
       </div>
     );

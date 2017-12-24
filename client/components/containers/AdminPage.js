@@ -4,7 +4,7 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import * as adminActions from '../../actions/adminActions';
 import * as userActions from '../../actions/userActions';
-import AdminUserCard from '../AdminUserCard';
+import AdminUserItem from '../AdminUserItem';
 
 class AdminPage extends React.Component {
   componentDidMount(){
@@ -17,11 +17,11 @@ class AdminPage extends React.Component {
   render() {
     var userCards = this.props.users.allIds.map(id => {
       var user = this.props.users.byId[id]
-      return <AdminUserCard key={id} user={user} setUserRole={this.setUserRole.bind(this)}/>;
+      return <AdminUserItem key={id} user={user} setUserRole={this.setUserRole.bind(this)}/>;
     })
 
     return (
-      <div>{userCards}</div>
+      <div className="card card-full top-spaced">{userCards}</div>
     );
   }
 }

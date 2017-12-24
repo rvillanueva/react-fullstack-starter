@@ -1,15 +1,10 @@
-@mixin clearfix() {
-  &:before,
-  &:after {
-    content: " "; // 1
-    display: table; // 2
-  }
-  &:after {
-    clear: both;
-  }
-}
+$text-color: rgb(77, 77, 77);
+$background-color: rgb(252, 252, 252);
 
-$body-text-color: rgb(77, 77, 77);
+$primary-accent: rgb(26, 50, 111);
+$light-grey: rgb(207, 207, 207);
+
+$card-border-radius: 3px;
 
 // Extra small screen / phone
 //** Deprecated `$screen-xs` as of v3.0.1

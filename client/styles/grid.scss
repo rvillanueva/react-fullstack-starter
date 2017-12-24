@@ -1,4 +1,5 @@
-@import 'variables';
+@import '_variables';
+@import '_mixins';
 
 // Centered container element
 @mixin container-fixed($gutter: $grid-gutter-width) {

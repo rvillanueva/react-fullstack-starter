@@ -17,11 +17,13 @@ export class FuelSavingsPage extends React.Component {
 
   render() {
     return (
-      <FuelSavingsForm
-        onSaveClick={this.saveFuelSavings}
-        onChange={this.calculateFuelSavings}
-        fuelSavings={this.props.fuelSavings}
-      />
+      <div className="card card-full top-spaced">
+        <FuelSavingsForm
+          onSaveClick={this.saveFuelSavings}
+          onChange={this.calculateFuelSavings}
+          fuelSavings={this.props.fuelSavings}
+        />
+      </div>
     );
   }
 }

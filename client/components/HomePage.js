@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 const HomePage = () => {
   return (
-    <div>
+    <div className="card card-full top-spaced">
       <h1>React Fullstack</h1>
 
       <h2>Get Started</h2>

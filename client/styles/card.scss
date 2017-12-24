@@ -1,0 +1,12 @@
+@import "_variables";
+
+.card {
+  background-color: white;
+  border-radius: $card-border-radius;
+  box-shadow: 0px 1px 1px rgba(0,0,0,0.08), 0px 1px 1px rgba(0,0,0,0.08);
+  padding: 36px;
+}
+
+.card-full {
+  width: 100%;
+}

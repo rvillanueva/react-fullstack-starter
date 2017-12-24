@@ -13,10 +13,12 @@ export class LoginPage extends React.Component {
 
   render() {
     return (
-      <LoginForm
-        login={this.login}
-        isAuthenticating={this.props.auth.isAuthenticating}
-      />
+      <div className="top-spaced">
+        <LoginForm
+          login={this.login}
+          isAuthenticating={this.props.auth.isAuthenticating}
+        />
+      </div>
     );
   }
 }

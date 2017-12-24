@@ -1,13 +1,16 @@
 /* Variables */
 
-@import "variables";
+@import "_variables";
 @import "grid";
+@import "card";
+@import "button";
 
 /* Styles */
 body {
   font: 14px 'Helvetica Neue', Helvetica, Arial, sans-serif;
   line-height: 1.4em;
-  color: $body-text-color;
+  color: $text-color;
+  background-color: $background-color;
   margin: 0 auto;
   -webkit-font-smoothing: antialiased;
   -moz-font-smoothing: antialiased;
@@ -31,6 +34,10 @@ h2 {
     margin-right: 52px;
     color: rgb(93, 93, 93);
   }
+}
+
+.top-spaced {
+  margin-top: 32px;
 }
 
 .pull-right {

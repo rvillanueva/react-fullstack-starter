@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import '../styles/admin.scss';
 
 export class AdminUserCard extends React.Component {
   onRoleChange(e){
@@ -14,7 +15,7 @@ export class AdminUserCard extends React.Component {
       return <option value={role} key={role}>{role}</option>
     })
     return (
-      <div>
+      <div className="admin-user-item">
         <strong>{this.props.user.name}</strong><br />
         {this.props.user.email}
         <div className="pull-right">

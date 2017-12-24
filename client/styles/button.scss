@@ -1,0 +1,27 @@
+@import "_variables";
+
+.btn {
+  border: none;
+  border-radius: 32px;
+  font-size: 1em;
+  color: white;
+  padding: 10px 24px;
+  text-transform: uppercase;
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.btn-default {
+  background-color: $light-grey;
+  &:hover {
+    background-color: lighten($light-grey, 10);
+  }
+}
+
+.btn-primary {
+  background-color: $primary-accent;
+  &:hover {
+    background-color: lighten($primary-accent, 10);
+  }
+}
