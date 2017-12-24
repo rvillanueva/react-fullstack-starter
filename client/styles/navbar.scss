@@ -1,0 +1,33 @@
+@import '_variables';
+
+.navbar {
+  height: 56px;
+  padding: 18px 0;
+  box-sizing: border-box;
+  border-bottom: 2px solid rgb(240, 240, 240);
+  background-color: white;
+  & a, a:active, a:visited {
+    font-weight: bold;
+    text-decoration: none;
+    margin-right: 52px;
+    color: rgb(93, 93, 93);
+  }
+}
+
+.nav-dropdown {
+  display: inline-block;
+}
+
+.nav-dropdown-trigger {
+  pointer: cursor;
+}
+.nav-dropdown-content {
+  position: absolute;
+  background-color: white;
+  border-radius: $card-border-radius;
+  padding: 8px 12px;
+  box-sizing:content-box;
+  display: inline-block;
+  right: 0;
+  box-shadow: $card-box-shadow;
+}

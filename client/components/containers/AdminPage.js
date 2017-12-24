@@ -5,6 +5,7 @@ import {bindActionCreators} from 'redux';
 import * as adminActions from '../../actions/adminActions';
 import * as userActions from '../../actions/userActions';
 import AdminUserItem from '../AdminUserItem';
+import '../../styles/admin-page.scss';
 
 class AdminPage extends React.Component {
   componentDidMount(){

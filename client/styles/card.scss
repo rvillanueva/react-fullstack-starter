@@ -3,7 +3,8 @@
 .card {
   background-color: white;
   border-radius: $card-border-radius;
-  box-shadow: 0px 1px 1px rgba(0,0,0,0.08), 0px 1px 1px rgba(0,0,0,0.08);
+  box-sizing: border-box;
+  box-shadow: $card-box-shadow;
   padding: 36px;
 }
 

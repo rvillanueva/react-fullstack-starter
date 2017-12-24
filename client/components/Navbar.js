@@ -4,6 +4,8 @@ import { NavLink } from 'react-router-dom';
 import {connect} from 'react-redux';
 import * as actions from '../actions/authActions';
 import {bindActionCreators} from 'redux';
+import NavDropdown from './NavDropdown';
+import '../styles/navbar.scss';
 
 // Since this component is simple and static, there's no parent container for it.
 class Navbar extends React.Component {
@@ -13,6 +15,7 @@ class Navbar extends React.Component {
     var name;
     var admin;
     var logout;
+
     if(!this.props.auth.user || !this.props.auth.user._id){
       login = <NavLink to="/login" activeClassName="active">Login</NavLink>
     } else {
@@ -30,7 +33,8 @@ class Navbar extends React.Component {
           <NavLink to="/about" activeClassName="active">About</NavLink>
           {admin}
           <div className="pull-right">
-            {login}{name}{logout}
+            {login}{name}
+            <NavDropdown />
           </div>
         </div>
       </div>

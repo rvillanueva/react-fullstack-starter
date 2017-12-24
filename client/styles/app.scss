@@ -43,3 +43,17 @@ h2 {
 .pull-right {
   float: right;
 }
+
+.hidden {
+  display: none;
+}
+.nav-dropdown {
+  display: inline-block;
+}
+
+.nav-dropdown-trigger {
+  pointer: cursor;
+}
+.nav-dropdown-content {
+  position: absolute;
+}
