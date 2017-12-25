@@ -17,10 +17,11 @@ export default {
   },
   auth: {
     isAuthenticating: false,
-    user: null
+    user: {}
   },
   users: {
     byId: {},
     allIds: []
-  }
+  },
+  errors: {}
 };

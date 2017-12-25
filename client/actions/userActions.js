@@ -16,26 +16,25 @@ function parseResponse(){
     }
 }
 
-function handleSystemError(error){
-  return function(dispatch){
-    console.error(error);
-    dispatch({
-      type: types.HANDLE_SYSTEM_ERROR,
-      error
-    })
+function handleError(err, cb){
+  console.log(err)
+  if(typeof cb === 'function'){
+    cb();
   }
 }
 
 export function getUsers(userId, newRole){
   return function(dispatch){
-    return fetchAuth('/api/users')
-    .then(parseResponse())
-    .then(users => {
-      dispatch({
-        type: types.UPDATE_USER_LIST,
-        users
+    return new Promise((resolve, reject) => {
+      fetchAuth('/api/users')
+      .then(parseResponse())
+      .then(users => {
+        dispatch({
+          type: types.UPDATE_USER_LIST,
+          users
+        })
       })
+      .catch(err => handleError(err, reject))
     })
-    .catch(err => dispatch(handleSystemError(err)))
   }
 }

@@ -8,7 +8,7 @@ import * as authActions from '../actions/authActions';
 
 class Root extends Component {
   componentWillMount(){
-    this.props.authActions.updateMyProfile();
+    this.props.authActions.getMyProfile();
   }
   render() {
     const { store, history } = this.props;

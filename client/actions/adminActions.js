@@ -1,7 +1,5 @@
 import * as types from '../constants/actionTypes';
 import fetchAuth from '../utils/fetch-auth';
-import { history } from '../store/configureStore';
-import cookie from 'js-cookie';
 
 function parseResponse(){
     return function(res){
@@ -12,13 +10,10 @@ function parseResponse(){
     }
 }
 
-function handleSystemError(error){
-  return function(dispatch){
-    console.error(error);
-    dispatch({
-      type: types.HANDLE_SYSTEM_ERROR,
-      error
-    })
+function handleError(err, cb){
+  console.log(err)
+  if(typeof cb === 'function'){
+    cb();
   }
 }
 
@@ -43,10 +38,7 @@ export function changeUserRole(userId, newRole){
         })
         resolve();
       })
-      .catch(err => {
-        dispatch(handleSystemError(err))
-        reject(err)
-      })
+      .catch(err => handleError(err, reject))
     })
   }
 }

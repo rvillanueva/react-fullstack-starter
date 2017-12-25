@@ -5,34 +5,39 @@ import { history } from '../store/configureStore';
 import cookie from 'js-cookie';
 
 function parseResponse(){
-  return function(res){
-      return res.json();
+  return function(res, err){
+    if(res.status >= 400){
+      console.log(res)
+      throw new Error(res.statusText);
+    }
+    return res.json();
   }
 }
 
 export function login(credentials){
   return function(dispatch){
-    dispatch({
-      type: types.START_LOGIN,
-      credentials
-    });
-    return fetch('/auth/local', {
-      method: 'POST',
-      body: JSON.stringify(credentials),
-      headers: {
-        "Content-Type": "application/json"
-      }
-    })
-    .then(parseResponse())
-    .then(json => {
-      if(json.token){
-        history.push('/about')
-        cookie.set('token', json.token);
-        dispatch(finishLogin())
-        dispatch(updateMyProfile())
-      } else {
-        dispatch(handleLoginError())
-      }
+    return new Promise((resolve, reject) => {
+      dispatch({
+        type: types.START_LOGIN,
+        credentials
+      });
+      fetch('/auth/local', {
+        method: 'POST',
+        body: JSON.stringify(credentials),
+        headers: {
+          "Content-Type": "application/json"
+        }
+      })
+      .then(parseResponse())
+      .then(json => {
+        if(json.token){
+          history.push('/')
+          cookie.set('token', json.token);
+          dispatch(finishLogin())
+          dispatch(getMyProfile())
+        }
+      })
+      .catch(err => handleError(err, reject))
     })
   }
 }
@@ -55,22 +60,50 @@ export function logout(){
   }
 }
 
-export function handleLoginError(msg){
-  return function(dispatch){
-    return dispatch({
-      type: types.HANDLE_LOGIN_ERROR,
-      msg
-    })
+function handleError(err, cb){
+  console.log(err)
+  if(typeof cb === 'function'){
+    cb();
   }
 }
 
-export function updateMyProfile(){
+export function getMyProfile(){
   return function(dispatch){
+    if(!cookie.get('token')){
+      return dispatch({
+        type: types.LOGOUT
+      });
+    }
     return fetchAuth('/api/users/me')
     .then(parseResponse())
     .then(user => dispatch({
-      type: types.UPDATE_MY_PROFILE,
+      type: types.GET_MY_PROFILE,
       user
     }))
+  }
+}
+
+export function changeMyPassword(oldPassword, newPassword){
+  return function(dispatch, getStore){
+    return new Promise((resolve, reject) => {
+      var user = getStore().auth.user
+      fetchAuth(`/api/users/${user._id}/password`, {
+        method: 'PUT',
+        body: JSON.stringify({oldPassword, newPassword}),
+        headers: {
+          "Content-Type": "application/json"
+        }
+      })
+      .then(res => {
+        if(res.status === 403){
+          reject('Old password is incorrect.');
+        } else if (res.status >= 400){
+          reject('Something went wrong.');
+        } else {
+          resolve();
+        }
+      })
+      .catch(err => reject('Something went wrong.'))
+    })
   }
 }

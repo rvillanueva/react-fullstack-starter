@@ -1,4 +1,4 @@
-import {START_LOGIN, FINISH_LOGIN, UPDATE_MY_PROFILE, LOGOUT} from '../constants/actionTypes';
+import {START_LOGIN, FINISH_LOGIN, GET_MY_PROFILE, LOGOUT} from '../constants/actionTypes';
 import objectAssign from 'object-assign';
 import initialState from './initialState';
 
@@ -21,13 +21,13 @@ export default function authReducer(state = initialState.auth, action) {
       newState.isAuthenticating = false;
       return newState;
 
-    case UPDATE_MY_PROFILE:
+    case GET_MY_PROFILE:
       newState = objectAssign({}, state);
       newState.user = action.user;
       return newState;
 
     case LOGOUT:
-      return objectAssign({}, state, { user: null });
+      return objectAssign({}, state, { user: {} });
 
     default:
       return state;

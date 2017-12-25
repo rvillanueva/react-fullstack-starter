@@ -6,6 +6,7 @@ import { Switch, Route } from 'react-router-dom';
 import HomePage from './Home/HomePage';
 import FuelSavingsPage from './FuelSavings/FuelSavingsPage';
 import LoginPage from './Login/LoginPage';
+import SettingsPage from './Settings/SettingsPage';
 import AdminPage from './Admin/AdminPage';
 import AboutPage from './About/AboutPage';
 import NotFoundPage from './NotFoundPage';
@@ -27,6 +28,7 @@ class App extends React.Component {
             <Route path="/about" component={AboutPage} />
             <Route path="/login" component={LoginPage} />
             <Route path="/admin" component={AdminPage} />
+            <Route path="/settings" component={SettingsPage} />
             <Route component={NotFoundPage} />
           </Switch>
         </div>

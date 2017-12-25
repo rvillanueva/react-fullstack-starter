@@ -16,7 +16,7 @@ class Navbar extends React.Component {
     var admin;
     var dropdown;
 
-    if(!this.props.auth.user || !this.props.auth.user._id){
+    if(!this.props.auth.user._id){
       login = <NavLink to="/login" activeClassName="active">Login</NavLink>
     } else {
       name = <div className="navbar-user">{this.props.auth.user.name}</div>
