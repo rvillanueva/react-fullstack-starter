@@ -1,4 +1,15 @@
+@import '../../styles/_variables';
+
 .alt-header {
   text-transform: uppercase;
   text-align: center;
+}
+
+.thing-input {
+  padding: 10px;
+  width: 100%;
+  box-sizing: border-box;
+  border-radius: $card-border-radius;
+  border: 1px solid $light-grey;
+  font-size: 1em;
 }

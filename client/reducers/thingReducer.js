@@ -20,7 +20,11 @@ export default function authReducer(state = initialState.things, action) {
       }
       action.things.map(thing => {
         if(!state.byId[thing._id]){
-          patch.allIds.push(thing._id);
+          if(action.insertAt === 'start'){
+            patch.allIds.splice(0, 0, thing._id);
+          } else {
+            patch.allIds.push(thing._id);
+          }
         }
         patch.byId[thing._id] = thing;
       })

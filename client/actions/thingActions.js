@@ -17,7 +17,7 @@ function parseResponse(){
 }
 
 function handleError(err, cb){
-  console.log(err)
+  console.error(err)
   if(typeof cb === 'function'){
     cb(err);
   }
@@ -52,6 +52,34 @@ export function deleteById(thingId){
           id: thingId
         })
       }, err => handleError(err, reject))
+    })
+  }
+}
+
+export function addThing(name){
+  return function(dispatch){
+    return new Promise((resolve, reject) => {
+      if(!name){
+        handleError('Must provide a name for Thing.', reject);
+        return;
+      }
+      fetchAuth('/api/things', {
+        method: 'POST',
+        body: JSON.stringify({name}),
+        headers: {
+          "Content-Type": "application/json"
+        }
+      })
+      .then(parseResponse())
+      .then(thing => {
+        dispatch({
+          type: types.MERGE_THING_LIST,
+          things: [thing],
+          insertAt: 'start'
+        })
+        resolve();
+      })
+      .catch(err => handleError(err, reject))
     })
   }
 }
