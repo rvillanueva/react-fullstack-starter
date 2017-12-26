@@ -23,5 +23,8 @@ export default {
     byId: {},
     allIds: []
   },
-  errors: {}
+  things: {
+    byId: {},
+    allIds: []
+  }
 };

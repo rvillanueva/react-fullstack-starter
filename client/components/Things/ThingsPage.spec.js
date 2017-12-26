@@ -1,12 +1,12 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import AboutPage from './AboutPage';
+import ThingsPage from './ThingsPage';
 
-describe('<AboutPage />', () => {
-  it('should have a header called \'About\'', () => {
+describe('<ThingsPage />', () => {
+  it('should have a header called \'Things\'', () => {
     const wrapper = shallow(<AboutPage />);
     const actual = wrapper.find('h2').text();
-    const expected = 'About';
+    const expected = 'Things';
 
     expect(actual).toEqual(expected);
   });
@@ -15,14 +15,6 @@ describe('<AboutPage />', () => {
     const wrapper = shallow(<AboutPage />);
     const actual = wrapper.find('h2').prop('className');
     const expected = 'alt-header';
-
-    expect(actual).toEqual(expected);
-  });
-
-  it('should link to an unknown route path', () => {
-    const wrapper = shallow(<AboutPage />);
-    const actual = wrapper.findWhere(n => n.prop('to') === '/badlink').length;
-    const expected = 1;
 
     expect(actual).toEqual(expected);
   });

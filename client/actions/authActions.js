@@ -7,10 +7,20 @@ import cookie from 'js-cookie';
 function parseResponse(){
   return function(res, err){
     if(res.status >= 400){
-      console.log(res)
-      throw new Error(res.statusText);
+      return Promise.reject(res.statusText);
     }
-    return res.json();
+    try {
+      return Promise.resolve(JSON.parse(res._bodyText));
+    } catch(e){
+      return Promise.resolve(res._bodyText)
+    }
+  }
+}
+
+function handleError(err, cb){
+  console.error(err)
+  if(typeof cb === 'function'){
+    cb(err);
   }
 }
 
@@ -60,13 +70,6 @@ export function logout(){
   }
 }
 
-function handleError(err, cb){
-  console.log(err)
-  if(typeof cb === 'function'){
-    cb();
-  }
-}
-
 export function getMyProfile(){
   return function(dispatch){
     if(!cookie.get('token')){
@@ -80,6 +83,7 @@ export function getMyProfile(){
       type: types.GET_MY_PROFILE,
       user
     }))
+    .catch(err => handleError(err))
   }
 }
 

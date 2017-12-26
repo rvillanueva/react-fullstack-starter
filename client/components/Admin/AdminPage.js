@@ -5,6 +5,7 @@ import {bindActionCreators} from 'redux';
 import * as adminActions from '../../actions/adminActions';
 import * as userActions from '../../actions/userActions';
 import AdminUserItem from './AdminUserItem';
+import {toArray} from '../../utils/normalize';
 import './admin-page.scss';
 
 class AdminPage extends React.Component {
@@ -16,9 +17,9 @@ class AdminPage extends React.Component {
     .then(() => this.props.userActions.getUsers())
   }
   render() {
-    var userCards = this.props.users.allIds.map(id => {
-      var user = this.props.users.byId[id]
-      return <AdminUserItem key={id} user={user} setUserRole={this.setUserRole.bind(this)}/>;
+    console.log(toArray(this.props.users))
+    var userCards = toArray(this.props.users).map(user => {
+      return <AdminUserItem key={user._id} user={user} setUserRole={this.setUserRole.bind(this)}/>;
     })
 
     return (

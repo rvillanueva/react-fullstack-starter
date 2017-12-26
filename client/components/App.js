@@ -8,7 +8,7 @@ import FuelSavingsPage from './FuelSavings/FuelSavingsPage';
 import LoginPage from './Login/LoginPage';
 import SettingsPage from './Settings/SettingsPage';
 import AdminPage from './Admin/AdminPage';
-import AboutPage from './About/AboutPage';
+import ThingsPage from './Things/ThingsPage';
 import NotFoundPage from './NotFoundPage';
 import Navbar from './Navbar/Navbar';
 
@@ -25,7 +25,7 @@ class App extends React.Component {
           <Switch>
             <Route exact path="/" component={HomePage} />
             <Route path="/fuel-savings" component={FuelSavingsPage} />
-            <Route path="/about" component={AboutPage} />
+            <Route path="/things" component={ThingsPage} />
             <Route path="/login" component={LoginPage} />
             <Route path="/admin" component={AdminPage} />
             <Route path="/settings" component={SettingsPage} />

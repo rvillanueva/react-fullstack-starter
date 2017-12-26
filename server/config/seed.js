@@ -42,8 +42,8 @@ export default function seedDatabaseIfNeeded() {
         });
         return thing;
       })
-      .then(() => console.log('finished populating things'))
-      .catch(err => console.log('error populating things', err));
+      .then(() => console.log('Finished populating things.'))
+      .catch(err => console.log('Error populating things', err));
 
     User.find({}).remove()
       .then(() => {
@@ -59,8 +59,8 @@ export default function seedDatabaseIfNeeded() {
           email: 'admin@example.com',
           password: 'admin'
         })
-        .then(() => console.log('finished populating users'))
-        .catch(err => console.log('error populating users', err));
+        .then(() => console.log('Finished populating users.'))
+        .catch(err => console.log('Error populating users', err));
       });
   }
 }

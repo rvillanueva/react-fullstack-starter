@@ -29,8 +29,8 @@ class Navbar extends React.Component {
       <div className="navbar">
         <div className="container">
           <NavLink exact to="/" activeClassName="active">Home</NavLink>
-          <NavLink to="/fuel-savings" activeClassName="active">Demo App</NavLink>
-          <NavLink to="/about" activeClassName="active">About</NavLink>
+          <NavLink to="/fuel-savings" activeClassName="active">Demo</NavLink>
+          <NavLink to="/things" activeClassName="active">Things</NavLink>
           {admin}
           <div className="pull-right">
             {login}
