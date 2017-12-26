@@ -53,7 +53,7 @@ export class ChangePasswordForm extends React.Component {
           New Password: <input type="password" name="newPassword" onChange={this.onChange.bind(this)}  value={this.state.newPassword} /><br />
           Repeat New Password: <input type="password" name="repeatNewPassword" onChange={this.onChange.bind(this)}  value={this.state.repeatNewPassword} /><br />
           {error}{success} <br />
-          <button type="submit">Update</button>
+          <button className="btn btn-primary" type="submit">Update</button>
         </form>
       </div>
     );

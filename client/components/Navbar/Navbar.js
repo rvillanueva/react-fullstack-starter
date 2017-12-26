@@ -17,20 +17,20 @@ class Navbar extends React.Component {
     var dropdown;
 
     if(!this.props.auth.user._id){
-      login = <NavLink to="/login" activeClassName="active">Login</NavLink>
+      login = <NavLink to="/login" className="navbar-item" activeClassName="active">Login</NavLink>
     } else {
-      name = <div className="navbar-user">{this.props.auth.user.name}</div>
+      name = <div className="navbar-user navbar-item">{this.props.auth.user.name}</div>
       if(this.props.auth.user.role === 'admin'){
-        admin = <NavLink to="/admin" activeClassName="active">Admin</NavLink>
+        admin = <NavLink to="/admin" className="navbar-item" activeClassName="active">Admin</NavLink>
       }
       dropdown = <NavDropdown />
     }
     return (
       <div className="navbar">
         <div className="container">
-          <NavLink exact to="/" activeClassName="active">Home</NavLink>
-          <NavLink to="/fuel-savings" activeClassName="active">Demo</NavLink>
-          <NavLink to="/things" activeClassName="active">Things</NavLink>
+          <NavLink exact to="/" className="navbar-item" activeClassName="active">Home</NavLink>
+          <NavLink to="/fuel-savings" className="navbar-item" activeClassName="active">Demo</NavLink>
+          <NavLink to="/things" className="navbar-item" activeClassName="active">Things</NavLink>
           {admin}
           <div className="pull-right">
             {login}

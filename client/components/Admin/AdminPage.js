@@ -17,7 +17,6 @@ class AdminPage extends React.Component {
     .then(() => this.props.userActions.getUsers())
   }
   render() {
-    console.log(toArray(this.props.users))
     var userCards = toArray(this.props.users).map(user => {
       return <AdminUserItem key={user._id} user={user} setUserRole={this.setUserRole.bind(this)}/>;
     })
