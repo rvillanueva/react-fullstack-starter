@@ -1,40 +1,34 @@
 import * as types from '../constants/actionTypes';
-import fetchAuth from '../utils/fetch-auth';
-import { history } from '../store/configureStore';
-import cookie from 'js-cookie';
+import axios from 'axios';
+import {handleErrorWithLogout} from '../utils/error';
 
-function parseResponse(){
-    return function(res){
-      if(res.status >= 400){
-        throw new Error(res.error);
-      }
-      try{
-        return res.json();
-      } catch(e){
-        throw new Error(e);
-      }
-    }
-}
-
-function handleError(err, cb){
-  console.log(err)
-  if(typeof cb === 'function'){
-    cb();
-  }
-}
-
-export function getUsers(userId, newRole){
-  return function(dispatch){
+export function get() {
+  return function(dispatch) {
     return new Promise((resolve, reject) => {
-      fetchAuth('/api/users')
-      .then(parseResponse())
-      .then(users => {
-        dispatch({
-          type: types.UPDATE_USER_LIST,
-          users
-        })
-      })
-      .catch(err => handleError(err, reject))
-    })
-  }
+      axios.get('/api/users')
+        .then(response => dispatch({
+          type: types.MERGE_USERS,
+          items: response.data
+        }))
+        .catch(handleErrorWithLogout(reject, dispatch));
+    });
+  };
+}
+
+export function updateMyProfile(patch) {
+  return async function(dispatch) {
+    try {
+      const {data: user} = await axios({
+        method: 'PATCH',
+        url: '/api/users/me',
+        data: patch
+      });
+      dispatch({
+        type: types.MERGE_USERS,
+        items: [user]
+      });
+    } catch(err) {
+      console.error(err);
+    }
+  };
 }

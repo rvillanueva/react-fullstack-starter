@@ -1,0 +1,29 @@
+@import './_variables';
+
+.label {
+  text-transform: uppercase;
+  font-size: 0.9em;
+  margin-bottom: 0.05em;
+  &.label--sm {
+    font-size: 0.8em;
+    margin-bottom: 0.1em;
+  }
+  &.label--xs {
+    font-size: 0.7em;
+    margin-bottom: 0.15em;
+  }
+  &.label--default {
+    color: lighten($text-color, 15);
+  }
+  &.label--success {
+    color: $success-accent;
+  }
+  &.label--spaced {
+    margin-left: 4px;
+    margin-right: 4px;
+  }
+  & .label__icon {
+    font-size: 0.9em;
+    margin-right: 4px;
+  }
+}

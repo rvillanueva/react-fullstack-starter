@@ -9,7 +9,7 @@ process.env.NODE_ENV = 'production';
 const compiler = webpack(config);
 
 compiler.run((error, stats) => {
-  if (error) {
+  if(error) {
     throw new Error(error);
   }
 

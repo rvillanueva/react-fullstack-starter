@@ -1,4 +1,4 @@
-import {START_LOGIN, FINISH_LOGIN, GET_MY_PROFILE, LOGOUT} from '../constants/actionTypes';
+import {START_LOGIN, FINISH_LOGIN, GET_MY_PROFILE, LOGOUT, SET_ACTIVE_ACCOUNT_ID} from '../constants/actionTypes';
 import objectAssign from 'object-assign';
 import initialState from './initialState';
 
@@ -8,28 +8,23 @@ import initialState from './initialState';
 // Note that I'm using Object.assign to create a copy of current state
 // and update values on the copy.
 export default function authReducer(state = initialState.auth, action) {
-  let newState;
-
   switch (action.type) {
-    case START_LOGIN:
-      // For this example, just simulating a save by changing date modified.
-      // In a real app using Redux, you might use redux-thunk and handle the async call in fuelSavingsActions.js
-      return objectAssign({}, state, {isAuthenticating: true});
+  case START_LOGIN:
+    return objectAssign({}, state, {isAuthenticating: true});
 
-    case FINISH_LOGIN:
-      newState = objectAssign({}, state);
-      newState.isAuthenticating = false;
-      return newState;
+  case FINISH_LOGIN:
+    return objectAssign({}, state, {isAuthenticating: false});
 
-    case GET_MY_PROFILE:
-      newState = objectAssign({}, state);
-      newState.user = action.user;
-      return newState;
+  case GET_MY_PROFILE:
+    return objectAssign({}, state, {user: action.user});
 
-    case LOGOUT:
-      return objectAssign({}, state, { user: {} });
+  case SET_ACTIVE_ACCOUNT_ID:
+    return Object.assign({}, state, {activeAccountId: action.id});
 
-    default:
-      return state;
+  case LOGOUT:
+    return initialState.auth;
+
+  default:
+    return state;
   }
 }

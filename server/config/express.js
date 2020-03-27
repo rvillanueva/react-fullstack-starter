@@ -14,30 +14,39 @@ import cookieParser from 'cookie-parser';
 import errorHandler from 'errorhandler';
 import path from 'path';
 import lusca from 'lusca';
+import hsts from 'hsts';
 import config from './environment';
 import passport from 'passport';
 import session from 'express-session';
-import connectMongo from 'connect-mongo';
-import mongoose from 'mongoose';
+import {sequelize} from '../sqldb';
 
-import historyApiFallback from 'connect-history-api-fallback';
-import webpackConfigDev from '../../webpack.config.dev';
+const SessionStore = require('connect-session-sequelize')(session.Store);
 
-var MongoStore = connectMongo(session);
-
-function conditionalHistoryApiFallback(){
-  return function(req, res, next){
-    var allowedPaths = ['api', 'auth', 'components', 'app','assets'];
-    if(allowedPaths.indexOf(req.url.split('/')[1]) > -1){
-      next();
+function conditionalHistoryApiFallback() {
+  return function(req, res, next) {
+    const allowedPaths = ['api', 'auth', 'components', 'app', 'assets'];
+    if(allowedPaths.indexOf(req.url.split('/')[1]) > -1) {
+      return next();
     } else {
-      historyApiFallback()(req, res, next);
+      return require('connect-history-api-fallback')()(req, res, next);
     }
-  }
+  };
+}
+
+function forceSecureConnection() {
+  return function(req, res, next) {
+    if(req.header('x-forwarded-proto') !== 'https' && !req.secure) {
+      return res.redirect(`https://${req.header('host')}${req.url}`);
+    } else {
+      return next();
+    }
+  };
 }
 
 export default function(app) {
   var env = app.get('env');
+
+  if(config.forceHttps) app.use(forceSecureConnection());
 
   if(env === 'development' || env === 'test') {
     app.use(express.static(path.join(config.root, '.tmp')));
@@ -48,15 +57,25 @@ export default function(app) {
   }
 
   app.set('appPath', path.join(config.root, 'client'));
-  //app.use(express.static(app.get('appPath')));
+  app.use(express.static(app.get('appPath')));
   app.use(morgan('dev'));
 
-  /*app.set('views', __dirname + '/views');
-  app.set('view engine', 'jsx');
-  app.engine('jsx', require('express-react-views').createEngine());
-*/
+  app.set('views', `${config.root}/server/views`);
+  app.engine('html', require('ejs').renderFile);
+  app.engine('js', require('ejs').renderFile);
+  app.set('view engine', 'html');
 
   app.use(compression());
+  app.use(function(req, res, next) {
+    let data = '';
+    req.on('data', function(chunk) {
+      data += chunk;
+    });
+    req.on('end', function() {
+      req.rawBody = data;
+    });
+    return next();
+  });
   app.use(bodyParser.urlencoded({ extended: false }));
   app.use(bodyParser.json());
   app.use(methodOverride());
@@ -67,15 +86,18 @@ export default function(app) {
   // Persist sessions with MongoStore / sequelizeStore
   // We need to enable sessions for passport-twitter because it's an
   // oauth 1.0 strategy, and Lusca depends on sessions
+  const sessionStore = new SessionStore({
+    db: sequelize,
+    table: 'session'
+  });
+
   app.use(session({
     secret: config.secrets.session,
     saveUninitialized: true,
     resave: false,
-    store: new MongoStore({
-      mongooseConnection: mongoose.connection,
-      db: 'dev'
-    })
+    store: sessionStore
   }));
+
 
   /**
    * Lusca - express server security
@@ -94,11 +116,17 @@ export default function(app) {
     }));
   }
 
+  if(env === 'production') {
+    app.use(hsts({ maxAge: 15552000 })); // 180 days in seconds
+    // Strict-Transport-Security: max-age: 15552000; includeSubDomains
+  }
+
   if(env === 'development') {
     const webpackDevMiddleware = require('webpack-dev-middleware');
     const webpackHotMiddleware = require('webpack-hot-middleware');
     const stripAnsi = require('strip-ansi');
     const webpack = require('webpack');
+    const webpackConfigDev = require('../../webpack.config.dev').default;
     const compiler = webpack(webpackConfigDev);
     const browserSync = require('browser-sync').create();
 
@@ -106,7 +134,7 @@ export default function(app) {
      * Run Browsersync and use middleware for Hot Module Replacement
      */
     browserSync.init({
-      open: true,
+      open: false,
       logFileChanges: false,
       proxy: `localhost:${config.port}`,
       ws: true,
@@ -139,7 +167,7 @@ export default function(app) {
      * Reload all devices when bundle is complete
      * or send a fullscreen error message to the browser instead
      */
-    compiler.plugin('done', function(stats) {
+    compiler.hooks.done.tap('HotWebpackRecompile', function(stats) {
       console.log('Webpack recompiled.');
       if(stats.hasErrors() || stats.hasWarnings()) {
         return browserSync.sockets.emit('fullscreen:message', {

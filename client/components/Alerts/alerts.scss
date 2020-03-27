@@ -1,0 +1,17 @@
+@import "../../styles/_variables";
+@import "../../styles/_mixins";
+
+.alert-card {
+  padding: 8px 16px;
+  border-radius: 4px;
+}
+
+.alert-card--error {
+  background-color: $danger-accent;
+  color: white;
+}
+
+.alert-card--success {
+  background-image: $success-gradient;
+  color: white;
+}

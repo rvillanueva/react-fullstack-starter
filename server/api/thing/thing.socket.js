@@ -4,7 +4,7 @@
 
 'use strict';
 
-import ThingEvents from './thing.events';
+import ThingEvents from './contact.events';
 
 // Model events to emit
 var events = ['save', 'remove'];

@@ -1,0 +1,41 @@
+@import '../../styles/_variables';
+
+$navbar-height: 52px;
+$navbar-text-color: darken(desaturate($primary-accent, 35), 13);
+$navbar-profile-width: 230px;
+.empty-navbar {
+  box-sizing: border-box;
+  background: white;
+  box-shadow: $nav-box-shadow;
+  font-size: 0.9em;
+  color: $navbar-text-color;
+  padding: 0;
+  height: $navbar-height;
+  min-height: $navbar-height;
+  max-height: $navbar-height;
+  display: flex;
+  flex-direction: row;
+  color: white;
+  user-select: none;
+  z-index: 9999;
+
+  & .navbar__logo__container {
+    display: inline-block;
+    margin: 0 22px;
+    padding-top: 13px;
+    height: 100%;
+    vertical-align: top;
+    & .navbar__logo {
+      height: 26px;
+    }
+    & .navbar__logo__beta-text {
+      position: absolute;
+      top: 6px;
+      left: 55px;
+      font-size: 10px;
+      font-weight: 500;
+      color: $primary-accent;
+      display: inline-block;
+    }
+  }
+}

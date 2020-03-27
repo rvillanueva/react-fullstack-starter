@@ -3,6 +3,7 @@
 
 // Centered container element
 @mixin container-fixed($gutter: $grid-gutter-width) {
+  max-width: 100%;
   margin-right: auto;
   margin-left: auto;
   padding-left:  floor(($gutter / 2));
@@ -12,7 +13,6 @@
 
 .container {
   @include container-fixed;
-
   @media (min-width: $screen-sm-min) {
     width: $container-sm;
   }
@@ -21,5 +21,29 @@
   }
   @media (min-width: $screen-lg-min) {
     width: $container-lg;
+  }
+}
+
+.container-expanded {
+  @media (min-width: $screen-lg-min) {
+    width: $container-lg-expanded;
+  }
+}
+
+.flex-row {
+  display: flex;
+  flex-direction: row;
+}
+
+.flex-row__group {
+  flex: 1;
+  &.flex-row__group--left {
+    text-align: left;
+  }
+  &.flex-row__group--center {
+    text-align: center;
+  }
+  &.flex-row__group--right {
+    text-align: right;
   }
 }

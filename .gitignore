@@ -41,3 +41,7 @@ dist
 
 # local environment variables
 local.env.js
+
+tmp
+
+.npmrc

@@ -1,109 +1,167 @@
 import * as types from '../constants/actionTypes';
-import fetchAuth from '../utils/fetch-auth';
-import fetch from 'cross-fetch';
+import axios from 'axios';
 import { history } from '../store/configureStore';
-import cookie from 'js-cookie';
+import {setAuthorizationHeader, removeAuthorizationHeader, getToken} from '../utils/axiosConfig';
+import {trackEvent, identifyUser} from './trackingActions';
+import {SIGNUP, LOGIN_SUCCESS, LOGIN_FAILED} from '../constants/trackingTypes';
+import {push} from './routerActions';
 
-function parseResponse(){
-  return function(res, err){
-    if(res.status >= 400){
-      console.log(res)
-      throw new Error(res.statusText);
-    }
-    return res.json();
-  }
-}
-
-export function login(credentials){
-  return function(dispatch){
-    return new Promise((resolve, reject) => {
+export function login(credentials) {
+  return async function(dispatch) {
+    try {
       dispatch({
         type: types.START_LOGIN,
         credentials
       });
-      fetch('/auth/local', {
-        method: 'POST',
-        body: JSON.stringify(credentials),
-        headers: {
-          "Content-Type": "application/json"
-        }
-      })
-      .then(parseResponse())
-      .then(json => {
-        if(json.token){
-          history.push('/')
-          cookie.set('token', json.token);
-          dispatch(finishLogin())
-          dispatch(getMyProfile())
-        }
-      })
-      .catch(err => handleError(err, reject))
-    })
-  }
+      const {data} = await axios.post('/auth/local', credentials);
+      dispatch(trackEvent(LOGIN_SUCCESS));
+      if(data.token) {
+        setAuthorizationHeader(data.token);
+        await dispatch(getMyProfile());
+      } else {
+        dispatch(logout());
+      }
+    } catch(err) {
+      dispatch(trackEvent(LOGIN_FAILED));
+      dispatch(finishLogin());
+      throw err;
+    }
+  };
 }
 
-function finishLogin(){
-  return function(dispatch){
+export function signup({name, email, password}, redirectTo) {
+  return async function(dispatch) {
+    try {
+      const {data} = await axios.post('/api/users', {name, email, password});
+      if(data.token) {
+        dispatch(push(redirectTo));
+        setAuthorizationHeader(data.token);
+        dispatch(trackEvent(SIGNUP));
+        return dispatch(getMyProfile());
+      } else {
+        throw new Error('No token provided.');
+      }
+    } catch(err) {
+      dispatch(finishLogin());
+      throw err;
+    }
+  };
+}
+
+export function verifyUserEmail(userId, verificationCode) {
+  return async function(dispatch) {
+    try {
+      await axios({
+        method: 'POST',
+        url: `/api/users/${userId}/verify`,
+        data: verificationCode
+      });
+    } catch(err) {
+      dispatch(finishLogin());
+      throw err;
+    }
+  };
+}
+
+function finishLogin() {
+  return function(dispatch) {
     dispatch({
       type: types.FINISH_LOGIN
-    })
-  }
+    });
+  };
 }
 
-export function logout(){
-  return function(dispatch){
-    cookie.remove('token');
-    history.push('/');
+export function logout() {
+  return function(dispatch) {
+    removeAuthorizationHeader();
+    history.push('/login');
     dispatch({
       type: types.LOGOUT
     });
-  }
+  };
 }
 
-function handleError(err, cb){
-  console.log(err)
-  if(typeof cb === 'function'){
-    cb();
-  }
-}
-
-export function getMyProfile(){
-  return function(dispatch){
-    if(!cookie.get('token')){
-      return dispatch({
-        type: types.LOGOUT
+export function getMyProfile() {
+  return async function(dispatch) {
+    try {
+      if(!getToken()) return null;
+      const {data: user} = await axios.get('/api/users/me');
+      dispatch({
+        type: types.GET_MY_PROFILE,
+        user
       });
+      dispatch(identifyUser(user._id, user));
+      dispatch(finishLogin());
+      return user;
+    } catch(err) {
+      if(err.response && err.response.status === 401) {
+        return null;
+      } else {
+        console.error(err);
+      }
     }
-    return fetchAuth('/api/users/me')
-    .then(parseResponse())
-    .then(user => dispatch({
-      type: types.GET_MY_PROFILE,
-      user
-    }))
-  }
+  };
 }
 
-export function changeMyPassword(oldPassword, newPassword){
-  return function(dispatch, getStore){
-    return new Promise((resolve, reject) => {
-      var user = getStore().auth.user
-      fetchAuth(`/api/users/${user._id}/password`, {
-        method: 'PUT',
-        body: JSON.stringify({oldPassword, newPassword}),
-        headers: {
-          "Content-Type": "application/json"
-        }
-      })
-      .then(res => {
-        if(res.status === 403){
-          reject('Old password is incorrect.');
-        } else if (res.status >= 400){
-          reject('Something went wrong.');
-        } else {
-          resolve();
-        }
-      })
-      .catch(err => reject('Something went wrong.'))
-    })
-  }
+export function changeMyPassword(oldPassword, newPassword) {
+  return async function() {
+    try {
+      return axios.put('/api/users/me/password', {oldPassword, newPassword});
+    } catch(err) {
+      console.error(err);
+      if(err.response.status === 403) {
+        throw new Error('Old password is incorrect.');
+      } else {
+        throw err;
+      }
+    }
+  };
+}
+
+export function requestPasswordReset(email) {
+  return async function() {
+    return axios({
+      method: 'POST',
+      url: '/api/users/password/request',
+      params: {email}
+    });
+  };
+}
+
+export function resetPassword(userId, token, newPassword) {
+  return async function() {
+    return axios({
+      method: 'POST',
+      url: '/api/users/password/reset',
+      params: {userId, token},
+      data: {newPassword}
+    });
+  };
+}
+
+export function verifyResetToken(userId, token) {
+  return async function() {
+    await axios({
+      method: 'GET',
+      url: '/api/users/password/verify-token',
+      params: {userId, token}
+    });
+    return;
+  };
+}
+
+export function handlePostAuthRedirect(redirectTo) {
+  return function(dispatch, getState) {
+    const user = getState().auth.user;
+    const activeAccountId = getState().auth.activeAccountId;
+    let nextLocation = '/';
+    if(!user) {
+      nextLocation = '/login';
+    } else if(user && !activeAccountId) {
+      nextLocation = '/account/create';
+    } else if(redirectTo) {
+      nextLocation = redirectTo;
+    }
+    history.push(nextLocation);
+  };
 }

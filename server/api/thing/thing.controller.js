@@ -1,45 +1,32 @@
 /**
  * Using Rails-like standard naming convention for endpoints.
- * GET     /api/things              ->  index
- * POST    /api/things              ->  create
- * GET     /api/things/:id          ->  show
- * PUT     /api/things/:id          ->  upsert
- * PATCH   /api/things/:id          ->  patch
- * DELETE  /api/things/:id          ->  destroy
+ * GET     /api/businesses              ->  index
+ * POST    /api/businesses              ->  create
+ * GET     /api/accounts/:id          ->  show
+ * PUT     /api/accounts/:id          ->  upsert
+ * PATCH   /api/accounts/:id          ->  patch
+ * DELETE  /api/accounts/:id          ->  destroy
  */
 
 'use strict';
 
-import jsonpatch from 'fast-json-patch';
-import Thing from './thing.model';
+import {Thing} from '../../sqldb';
+import {applyPatch} from '../../utils/patch';
 
-function respondWithResult(res, statusCode) {
+export function respondWithResult(res, statusCode) {
   statusCode = statusCode || 200;
   return function(entity) {
     if(entity) {
       return res.status(statusCode).json(entity);
     }
-    return null;
+    return res.status(statusCode).end();
   };
 }
 
-function patchUpdates(patches) {
-  return function(entity) {
-    try {
-      // eslint-disable-next-line prefer-reflect
-      jsonpatch.apply(entity, patches, /*validate*/ true);
-    } catch(err) {
-      return Promise.reject(err);
-    }
-
-    return entity.save();
-  };
-}
-
-function removeEntity(res) {
+export function removeEntity(res) {
   return function(entity) {
     if(entity) {
-      return entity.remove()
+      return entity.destroy()
         .then(() => {
           res.status(204).end();
         });
@@ -47,7 +34,7 @@ function removeEntity(res) {
   };
 }
 
-function handleEntityNotFound(res) {
+export function handleEntityNotFound(res) {
   return function(entity) {
     if(!entity) {
       res.status(404).end();
@@ -57,62 +44,86 @@ function handleEntityNotFound(res) {
   };
 }
 
-function handleError(res, statusCode) {
+export function handleError(res, statusCode) {
   statusCode = statusCode || 500;
   return function(err) {
+    console.error(err);
     res.status(statusCode).send(err);
   };
 }
 
 // Gets a list of Things
-export function index(req, res) {
-  return Thing.find().exec()
-    .then(respondWithResult(res))
-    .catch(handleError(res));
-}
-
-// Gets a single Thing from the DB
-export function show(req, res) {
-  return Thing.findById(req.params.id).exec()
-    .then(handleEntityNotFound(res))
-    .then(respondWithResult(res))
-    .catch(handleError(res));
-}
-
-// Creates a new Thing in the DB
-export function create(req, res) {
-  return Thing.create(req.body)
-    .then(respondWithResult(res, 201))
-    .catch(handleError(res));
-}
-
-// Upserts the given Thing in the DB at the specified ID
-export function upsert(req, res) {
-  if(req.body._id) {
-    Reflect.deleteProperty(req.body, '_id');
+export async function index(req, res, next) {
+  try {
+    const things = await Thing.findAll({
+      where: {}
+    });
+    return res.status(200).json(things);
+  } catch(err) {
+    return next(err);
   }
-  return Thing.findOneAndUpdate({_id: req.params.id}, req.body, {new: true, upsert: true, setDefaultsOnInsert: true, runValidators: true}).exec()
-
-    .then(respondWithResult(res))
-    .catch(handleError(res));
 }
 
-// Updates an existing Thing in the DB
-export function patch(req, res) {
-  if(req.body._id) {
-    Reflect.deleteProperty(req.body, '_id');
+// Gets a single Business from the DB
+export async function show(req, res, next) {
+  try {
+    const {thingId} = req.params;
+    const thing = await Thing.findOne({
+      where: {
+        _id: thingId
+      }
+    });
+    if(!thing) return res.status(403).end();
+    return res.status(200).json({
+      thing
+    });
+  } catch(err) {
+    return next(err);
   }
-  return Thing.findById(req.params.id).exec()
-    .then(handleEntityNotFound(res))
-    .then(patchUpdates(req.body))
-    .then(respondWithResult(res))
-    .catch(handleError(res));
 }
 
-// Deletes a Thing from the DB
-export function destroy(req, res) {
-  return Thing.findById(req.params.id).exec()
-    .then(handleEntityNotFound(res))
-    .then(removeEntity(res))
-    .catch(handleError(res));
+// Creates a new Business in the DB
+export async function create(req, res, next) {
+  try {
+    const thing = await Thing.create(req.body);
+    return res.status(200).json({
+      thing
+    });
+  } catch(e) {
+    return next(e);
+  }
+}
+
+// Updates an existing Business in the DB
+export async function patch(req, res, next) {
+  try {
+    const thing = await Thing.findOne({
+      where: {
+        _id: req.params.thingId
+      }
+    });
+    applyPatch(thing, req.body);
+    await thing.save();
+    return res.status(200).json(thing);
+  } catch(e) {
+    return next(e);
+  }
+}
+
+
+// Deletes a Business from the DB
+export async function destroy(req, res, next) {
+  try {
+    const {thingId} = req.params;
+    const thing = await Thing.findOne({
+      where: {
+        _id: thingId
+      }
+    });
+    if(!thing) return res.status(403).end();
+    await thing.destroy();
+    return res.status(200).end();
+  } catch(e) {
+    return next(e);
+  }
 }

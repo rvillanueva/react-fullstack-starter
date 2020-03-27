@@ -1,0 +1,9 @@
+{
+  "name": "Example App",
+  "website": "https://www.example.com/",
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    }
+  ]
+}

@@ -1,13 +1,20 @@
 // For info about this file refer to webpack and webpack-hot-middleware documentation
 // For info on how we're generating bundles with hashed filenames for cache busting: https://medium.com/@okonetchnikov/long-term-caching-of-static-assets-with-webpack-1ecb139adb95#.w99i89nsz
 import webpack from 'webpack';
-import ExtractTextPlugin from 'extract-text-webpack-plugin';
-import WebpackMd5Hash from 'webpack-md5-hash';
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
+import CopyWebpackPlugin from 'copy-webpack-plugin';
 import path from 'path';
 
 const GLOBALS = {
   'process.env.NODE_ENV': JSON.stringify('production'),
+  'process.env.DOMAIN': JSON.stringify(process.env.DOMAIN),
+  'process.env.SENTRY_DSN_FRONTEND': JSON.stringify(process.env.SENTRY_DSN_FRONTEND),
+  'process.env.DEPLOYMENT_NAME': JSON.stringify(process.env.DEPLOYMENT_NAME),
+  'process.env.FORCE_HTTPS': JSON.stringify(process.env.FORCE_HTTPS),
+  'process.env.PLAID_PUBLIC_KEY': JSON.stringify(process.env.PLAID_PUBLIC_KEY),
+  'process.env.PLAID_ENV': JSON.stringify(process.env.PLAID_ENV),
+  'process.env.STRIPE_DASHBOARD_BASE_URL': JSON.stringify(process.env.STRIPE_DASHBOARD_BASE_URL),
   __DEV__: false
 };
 
@@ -15,24 +22,27 @@ export default {
   resolve: {
     extensions: ['*', '.js', '.jsx', '.json']
   },
+  mode: 'production',
   devtool: 'source-map', // more info:https://webpack.js.org/guides/production/#source-mapping and https://webpack.js.org/configuration/devtool/
-  entry: path.resolve(__dirname, 'client/index'),
+  entry: [
+    'babel-polyfill',
+    path.resolve(__dirname, 'client/index')
+  ],
   target: 'web',
   output: {
-    path: path.resolve(__dirname, 'dist'),
+    path: path.resolve(__dirname, 'dist/client'),
     publicPath: '/',
     filename: '[name].[chunkhash].js'
   },
   plugins: [
-    // Hash the files using MD5 so that their names change when the content changes.
-    new WebpackMd5Hash(),
-
     // Tells React to build in prod mode. https://facebook.github.io/react/downloads.html
     new webpack.DefinePlugin(GLOBALS),
 
     // Generate an external css file with a hash in the filename
-    new ExtractTextPlugin('[name].[contenthash].css'),
-
+    new MiniCssExtractPlugin({
+      filename: '[name].[hash].css',
+      chunkFilename: '[id].[hash].css',
+    }),
     // Generate HTML file that contains references to generated bundles. See here for how this works: https://github.com/ampedandwired/html-webpack-plugin#basic-usage
     new HtmlWebpackPlugin({
       template: 'client/index.ejs',
@@ -50,13 +60,20 @@ export default {
         minifyURLs: true
       },
       inject: true,
-      // Note that you can add custom options here if you need to handle other custom logic in index.html
-      // To track JavaScript errors via TrackJS, sign up for a free trial at TrackJS.com and enter your token below.
-      trackJSToken: ''
+      sentryConfigUrl: process.env.SENTRY_DSN_FRONTEND || '',
+      deploymentName: process.env.DEPLOYMENT_NAME,
+      googleAnalyticsId: process.env.GOOGLE_ANALYTICS_ID,
+      googleAdsId: process.env.GOOGLE_ADS_ID,
+      mixpanelId: process.env.MIXPANEL_ID
     }),
 
     // Minify JS
-    new webpack.optimize.UglifyJsPlugin({ sourceMap: true }),
+    new CopyWebpackPlugin([
+      { from: 'package.json', to: '../package.json' },
+      { from: '.sequelizerc', to: '..' },
+      { from: 'sequelize', to: '../sequelize' },
+      { from: '.npmrc', to: '..' }
+    ])
   ],
   module: {
     rules: [
@@ -128,37 +145,39 @@ export default {
       },
       {
         test: /(\.css|\.scss|\.sass|\.less)$/,
-        use: ExtractTextPlugin.extract({
-          use: [
-            {
-              loader: 'css-loader',
-              options: {
-                minimize: true,
-                sourceMap: true
-              }
-            }, {
-              loader: 'postcss-loader',
-              options: {
-                plugins: () => [
-                  require('autoprefixer')
-                ],
-                sourceMap: true
-              }
-            },{
-              loader: 'less-loader',
-              options: {
-                includePaths: [path.resolve(__dirname, 'src', 'less')],
-                sourceMap: true
-              }
-            }, {
-              loader: 'sass-loader',
-              options: {
-                includePaths: [path.resolve(__dirname, 'src', 'scss')],
-                sourceMap: true
-              }
-            }
-          ]
-        })
+        use: [{
+          loader: MiniCssExtractPlugin.loader,
+          options: {
+            reloadAll: true
+          },
+        },
+        {
+          loader: 'css-loader',
+          options: {
+            sourceMap: true
+          }
+        }, {
+          loader: 'postcss-loader',
+          options: {
+            plugins: () => [
+              require('autoprefixer')
+            ],
+            sourceMap: true
+          }
+        }, {
+          loader: 'less-loader',
+          options: {
+            includePaths: [path.resolve(__dirname, 'src', 'less')],
+            sourceMap: true
+          }
+        }, {
+          loader: 'sass-loader',
+          options: {
+            includePaths: [path.resolve(__dirname, 'src', 'scss')],
+            sourceMap: true
+          }
+        }
+        ]
       }
     ]
   }

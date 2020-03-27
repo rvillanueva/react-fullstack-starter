@@ -1,0 +1,20 @@
+@import "../../styles/_variables";
+@import "../../styles/_mixins";
+
+.signup-page {
+  @include flex-center;
+  padding: 36px;
+  text-align: center;
+  & .signup-card {
+    @include card;
+    text-align: left;
+    display: inline-block;
+    width: 440px;
+    padding: 36px;
+  }
+  & .signup-button {
+    width: 100%;
+    margin: 12px 0;
+  }
+
+}

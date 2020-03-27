@@ -1,27 +1,20 @@
+import {initializeNormalState} from '../utils/normalize';
+
 export default {
-  fuelSavings: {
-    newMpg: '',
-    tradeMpg: '',
-    newPpg: '',
-    tradePpg: '',
-    milesDriven: '',
-    milesDrivenTimeframe: 'week',
-    displayResults: false,
-    dateModified: null,
-    necessaryDataIsProvidedToCalculateSavings: false,
-    savings: {
-      monthly: 0,
-      annual: 0,
-      threeYear: 0
-    }
-  },
   auth: {
     isAuthenticating: false,
-    user: {}
+    user: null,
+    activeAccountId: null
   },
-  users: {
-    byId: {},
-    allIds: []
-  },
-  errors: {}
+  users: initializeNormalState(),
+  accounts: initializeNormalState(),
+  integrations: initializeNormalState(),
+  customers: initializeNormalState(),
+  payments: initializeNormalState(),
+  memberships: initializeNormalState(),
+  overlay: {
+    isVisible: false,
+    type: null,
+    data: {}
+  }
 };

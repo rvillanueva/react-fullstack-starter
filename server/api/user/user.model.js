@@ -1,158 +1,107 @@
 'use strict';
-/*eslint no-invalid-this:0*/
-import crypto from 'crypto';
-mongoose.Promise = require('bluebird');
-import mongoose, {Schema} from 'mongoose';
-import {registerEvents} from './user.events';
 
-const authTypes = ['github', 'twitter', 'facebook', 'google'];
-
-var UserSchema = new Schema({
-  name: String,
-  email: {
-    type: String,
-    lowercase: true,
-    required() {
-      if(authTypes.indexOf(this.provider) === -1) {
-        return true;
-      } else {
-        return false;
-      }
-    }
-  },
-  role: {
-    type: String,
-    default: 'user'
-  },
-  password: {
-    type: String,
-    required() {
-      if(authTypes.indexOf(this.provider) === -1) {
-        return true;
-      } else {
-        return false;
-      }
-    }
-  },
-  provider: String,
-  salt: String,
-  google: {},
-  github: {}
-});
-
-/**
- * Virtuals
- */
-
-// Public profile information
-UserSchema
-  .virtual('profile')
-  .get(function() {
-    return {
-      name: this.name,
-      role: this.role
-    };
-  });
-
-// Non-sensitive info we'll be putting in the token
-UserSchema
-  .virtual('token')
-  .get(function() {
-    return {
-      _id: this._id,
-      role: this.role
-    };
-  });
-
-/**
- * Validations
- */
-
-// Validate empty email
-UserSchema
-  .path('email')
-  .validate(function(email) {
-    if(authTypes.indexOf(this.provider) !== -1) {
-      return true;
-    }
-    return email.length;
-  }, 'Email cannot be blank');
-
-// Validate empty password
-UserSchema
-  .path('password')
-  .validate(function(password) {
-    if(authTypes.indexOf(this.provider) !== -1) {
-      return true;
-    }
-    return password.length;
-  }, 'Password cannot be blank');
-
-// Validate email is not taken
-UserSchema
-  .path('email')
-  .validate(function(value) {
-    if(authTypes.indexOf(this.provider) !== -1) {
-      return true;
-    }
-
-    return this.constructor.findOne({ email: value }).exec()
-      .then(user => {
-        if(user) {
-          if(this.id === user.id) {
-            return true;
-          }
-          return false;
-        }
-        return true;
-      })
-      .catch(function(err) {
-        throw err;
-      });
-  }, 'The specified email address is already in use.');
+import cryptoUtil from '../../utils/crypto';
+import passwordIsValid from '../../../shared/validation/password';
+import moment from 'moment';
+import randomstring from 'randomstring';
+import jwt from 'jsonwebtoken';
+import config from '../../config/environment';
+import {AccountPermission, Account} from '../../sqldb';
 
 var validatePresenceOf = function(value) {
   return value && value.length;
 };
 
-/**
- * Pre-save hook
- */
-UserSchema
-  .pre('save', function(next) {
-    // Handle new/update passwords
-    if(!this.isModified('password')) {
-      return next();
-    }
-
-    if(!validatePresenceOf(this.password)) {
-      if(authTypes.indexOf(this.provider) === -1) {
-        return next(new Error('Invalid password'));
-      } else {
-        return next();
+export default function(sequelize, DataTypes) {
+  var User = sequelize.define('user', {
+    _id: {
+      primaryKey: true,
+      type: DataTypes.UUID,
+      allowNull: false,
+      defaultValue: DataTypes.UUIDV4
+    },
+    name: DataTypes.STRING,
+    email: {
+      type: DataTypes.STRING,
+      unique: {
+        msg: 'The specified email address is already in use.'
+      },
+      validate: {
+        isEmail: true
       }
-    }
-
-    // Make salt with a callback
-    this.makeSalt((saltErr, salt) => {
-      if(saltErr) {
-        return next(saltErr);
-      }
-      this.salt = salt;
-      this.encryptPassword(this.password, (encryptErr, hashedPassword) => {
-        if(encryptErr) {
-          return next(encryptErr);
+    },
+    role: {
+      type: DataTypes.STRING,
+      defaultValue: 'unverified'
+    },
+    password: {
+      type: DataTypes.STRING,
+      validate: {
+        notEmpty: true,
+        isStrong: async password => {
+          const response = await passwordIsValid(password);
+          if(!response.isValid) {
+            throw new Error('Password is not strong enough.');
+          }
         }
-        this.password = hashedPassword;
-        return next();
-      });
-    });
+      }
+    },
+    provider: DataTypes.STRING,
+    salt: DataTypes.STRING,
+    passwordResetToken: DataTypes.STRING,
+    passwordResetTokenExpiresAt: DataTypes.DATE,
+    emailVerificationToken: DataTypes.STRING,
+    emailVerificationTokenExpiresAt: DataTypes.DATE
+  }, {
+    defaultScope: {
+      attributes: { exclude: ['passwordResetToken', 'passwordResetTokenExpiresAt', 'emailVerificationToken', 'emailVerificationTokenExpiresAt', 'salt', 'password'] }
+    },
+    scopes: {
+      withSecrets: {
+        attributes: {}
+      }
+    },
+    /**
+     * Virtual Getters
+     */
+    getterMethods: {
+      // Public profile information
+      profile() {
+        return {
+          name: this.name,
+          role: this.role
+        };
+      },
+
+      // Non-sensitive info we'll be putting in the token
+      token() {
+        return {
+          _id: this._id,
+          role: this.role
+        };
+      }
+    },
+
+    /**
+     * Pre-save hooks
+     */
+    hooks: {
+      beforeBulkCreate(users) {
+        var promises = users.map(user => user.updatePassword());
+        return Promise.all(promises);
+      },
+      beforeCreate(user) {
+        return user.updatePassword();
+      },
+      beforeUpdate(user) {
+        if(user.changed('password')) {
+          return user.updatePassword();
+        }
+        return Promise.resolve();
+      }
+    }
   });
 
-/**
- * Methods
- */
-UserSchema.methods = {
   /**
    * Authenticate - check if the passwords are the same
    *
@@ -161,23 +110,17 @@ UserSchema.methods = {
    * @return {Boolean}
    * @api public
    */
-  authenticate(password, callback) {
-    if(!callback) {
-      return this.password === this.encryptPassword(password);
-    }
+  User.prototype.authenticate = async function(password) {
+    const encrypted = await this.encryptPassword(password);
+    return this.password === encrypted;
+  };
 
-    this.encryptPassword(password, (err, pwdGen) => {
-      if(err) {
-        return callback(err);
-      }
 
-      if(this.password === pwdGen) {
-        return callback(null, true);
-      } else {
-        return callback(null, false);
-      }
+  User.prototype.getSignedToken = function() {
+    return jwt.sign({ _id: this.get('_id') }, config.secrets.session, {
+      expiresIn: 60 * 60 * 5
     });
-  },
+  };
 
   /**
    * Make salt
@@ -187,32 +130,9 @@ UserSchema.methods = {
    * @return {String}
    * @api public
    */
-  makeSalt(...args) {
-    let byteSize;
-    let callback;
-    let defaultByteSize = 16;
-
-    if(typeof args[0] === 'function') {
-      callback = args[0];
-      byteSize = defaultByteSize;
-    } else if(typeof args[1] === 'function') {
-      callback = args[1];
-    } else {
-      throw new Error('Missing Callback');
-    }
-
-    if(!byteSize) {
-      byteSize = defaultByteSize;
-    }
-
-    return crypto.randomBytes(byteSize, (err, salt) => {
-      if(err) {
-        return callback(err);
-      } else {
-        return callback(null, salt.toString('base64'));
-      }
-    });
-  },
+  User.prototype.makeSalt = function() {
+    return cryptoUtil.makeSalt();
+  };
 
   /**
    * Encrypt password
@@ -222,35 +142,78 @@ UserSchema.methods = {
    * @return {String}
    * @api public
    */
-  encryptPassword(password, callback) {
-    if(!password || !this.salt) {
-      if(!callback) {
-        return null;
-      } else {
-        return callback('Missing password or salt');
-      }
+  User.prototype.encryptPassword = function(password) {
+    return cryptoUtil.encryptPassword(password, this.salt);
+  };
+
+  /**
+   * Update password field
+   *
+   * @param {Function} fn
+   * @return {String}
+   * @api public
+   */
+  User.prototype.updatePassword = async function() {
+    // Handle new/update passwords
+    if(!this.password) return null;
+
+    if(!validatePresenceOf(this.password)) {
+      throw new Error('Invalid password');
     }
 
-    var defaultIterations = 10000;
-    var defaultKeyLength = 64;
-    var salt = new Buffer(this.salt, 'base64');
+    // Make salt with a callback
+    const salt = await this.makeSalt();
+    this.salt = salt;
+    const hashedPassword = await this.encryptPassword(this.password);
+    this.password = hashedPassword;
+    return;
+  };
 
-    if(!callback) {
-      // eslint-disable-next-line no-sync
-      return crypto.pbkdf2Sync(password, salt, defaultIterations,
-          defaultKeyLength, 'sha1')
-        .toString('base64');
-    }
+  User.prototype.generatePasswordResetToken = async function() {
+    this.set('passwordResetToken', randomstring.generate({length: 18}));
+    this.set('passwordResetTokenExpiresAt', moment().add(1, 'hour').toDate());
+    return;
+  };
 
-    return crypto.pbkdf2(password, salt, defaultIterations, defaultKeyLength, 'sha1', (err, key) => {
-      if(err) {
-        return callback(err);
-      } else {
-        return callback(null, key.toString('base64'));
-      }
+  User.prototype.verifyPasswordResetToken = function(token) {
+    const passwordResetToken = this.get('passwordResetToken');
+    const matches = passwordResetToken && passwordResetToken === token;
+    const isExpired = moment(this.get('passwordResetTokenExpiresAt')).isBefore(moment());
+    if(matches && !isExpired) return true;
+    return false;
+  };
+
+  User.prototype.generateEmailVerificationToken = function() {
+    this.set('emailVerificationToken', randomstring.generate({length: 18}));
+    this.set('emailVerificationTokenExpiresAt', moment().add(6, 'hour').toDate());
+  };
+
+  User.prototype.verifyEmailVerificationToken = function(token) {
+    const emailVerificationToken = this.get('emailVerificationToken');
+    const matches = emailVerificationToken && emailVerificationToken === token;
+    const isExpired = moment(this.get('emailVerificationTokenExpiresAt')).isBefore(moment());
+    if(matches && !isExpired) return true;
+    return false;
+  };
+
+  User.prototype.verify = async function() {
+    this.set('role', 'user');
+    this.set('emailVerificationToken', null);
+    this.set('emailVerificationTokenExpiresAt', null);
+    await this.save();
+    const accounts = await AccountPermission.findAll({
+      where: {
+        userId: this.get('_id')
+      },
+      attributes: []
     });
-  }
-};
+    if(accounts.length === 0) {
+      const newAccount = await Account.create({
+        name: ''
+      });
+      await newAccount.addTeamMember(this.get('_id'), 'admin');
+    }
+  };
 
-registerEvents(UserSchema);
-export default mongoose.model('User', UserSchema);
+  return User;
+}

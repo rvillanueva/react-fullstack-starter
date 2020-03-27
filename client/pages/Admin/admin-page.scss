@@ -1,0 +1,13 @@
+@import "../../styles/_variables";
+
+.admin-user-item {
+  padding: 18px 0;
+  border-bottom: 1px solid $light-grey;
+  &:first-child {
+    padding-top: 0;
+  }
+  &:last-child {
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+}

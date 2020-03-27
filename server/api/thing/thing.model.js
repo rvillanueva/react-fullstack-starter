@@ -1,13 +1,13 @@
 'use strict';
 
-import mongoose from 'mongoose';
-import {registerEvents} from './thing.events';
-
-var ThingSchema = new mongoose.Schema({
-  name: String,
-  info: String,
-  active: Boolean
-});
-
-registerEvents(ThingSchema);
-export default mongoose.model('Thing', ThingSchema);
+export default function(sequelize, DataTypes) {
+  const Thing = sequelize.define('thing', {
+    _id: {
+      primaryKey: true,
+      type: DataTypes.UUID,
+      allowNull: false,
+      defaultValue: DataTypes.UUIDV4
+    }
+  });
+  return Thing;
+}

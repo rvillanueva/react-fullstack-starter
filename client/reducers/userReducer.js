@@ -1,5 +1,6 @@
-import {UPDATE_USER_LIST} from '../constants/actionTypes';
-import objectAssign from 'object-assign';
+import {MERGE_USERS, MERGE_ACCOUNT_PERMISSIONS, LOGOUT, REMOVE_USER} from '../constants/actionTypes';
+import {mergeItems, removeItem} from '../utils/normalize';
+import {normalize, AccountPermission} from '../normalize';
 import initialState from './initialState';
 
 // IMPORTANT: Note that with Redux, state should NEVER be changed.
@@ -8,23 +9,17 @@ import initialState from './initialState';
 // Note that I'm using Object.assign to create a copy of current state
 // and update values on the copy.
 export default function authReducer(state = initialState.users, action) {
-  let newState;
-
   switch (action.type) {
+  case LOGOUT:
+    return initialState.users;
+  case MERGE_USERS:
+    return mergeItems(state, action.items);
+  case MERGE_ACCOUNT_PERMISSIONS:
+    return mergeItems(state, normalize(action.items, [AccountPermission]).toArray('users'));
+  case REMOVE_USER:
+    return removeItem(state, action.id);
 
-    case UPDATE_USER_LIST:
-      let byId = Object.assign({}, state.byId);
-      let allIds = [...state.allIds];
-      action.users.map(user => {
-        if(!state.byId[user._id]){
-          allIds.push(user._id);
-        }
-        byId[user._id] = user;
-      })
-      newState = objectAssign({}, state, { byId: byId, allIds: allIds});
-      return newState;
-
-    default:
-      return state;
+  default:
+    return state;
   }
 }

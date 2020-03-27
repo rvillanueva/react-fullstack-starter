@@ -1,14 +1,24 @@
 import { combineReducers } from 'redux';
-import fuelSavings from './fuelSavingsReducer';
 import auth from './authReducer';
 import users from './userReducer';
-import { routerReducer } from 'react-router-redux';
+import accounts from './accountReducer';
+import memberships from './accountPermissionReducer';
+import integrations from './integrationReducer';
+import customers from './customerReducer';
+import payments from './paymentReducer';
+import overlay from './overlayReducer';
+import { connectRouter } from 'connected-react-router';
 
-const rootReducer = combineReducers({
-  fuelSavings,
+const rootReducer = history => combineReducers({
   auth,
   users,
-  routing: routerReducer
+  accounts,
+  memberships,
+  integrations,
+  payments,
+  customers,
+  overlay,
+  router: connectRouter(history)
 });
 
 export default rootReducer;

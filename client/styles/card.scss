@@ -1,13 +1,172 @@
 @import "_variables";
+@import "_mixins";
 
 .card {
-  background-color: white;
-  border-radius: $card-border-radius;
-  box-sizing: border-box;
-  box-shadow: $card-box-shadow;
-  padding: 36px;
+  @include card();
+  border-radius: 3px;
+  &.card--spaced {
+    margin-bottom: 12px;
+  }
+  & .card__heading {
+    border-bottom: 1px solid $lighter-grey;
+    display: flex;
+    padding: 8px 10px;
+    height: 54px;
+    & .card__heading__right {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      flex-direction: row-reverse;
+      margin-right: 8px;
+    }
+    & .card__title {
+      padding: 6px 10px;
+    }
+  }
+  & .card__title {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin: 0;
+    line-height: 1.6em;
+  }
+  & .card__body--padded {
+    padding: 20px;
+  }
+  & .card__body--empty {
+    background-color: $lighter-grey;
+  }
+  & .card__divider {
+    height: 1px;
+    border-bottom: 1px solid $lighter-grey;
+    margin-top: 18px;
+    margin-bottom: 18px;
+  }
+  & .card__list {
+    &.card__list--border-top {
+      border-top: 1px solid $lighter-grey;
+    }
+    &.card__list--border-bottom {
+      border-bottom: 1px solid $lighter-grey;
+    }
+    & .card__list__item {
+      display: block;
+      border-bottom: 1px solid $lighter-grey;
+      &.card__list__item--padded {
+        padding: 14px 20px;
+      }
+      &.card__list__item--clickable {
+        transition: $button-background-color-transition;
+        &:hover {
+          background-color: $lightest-grey;
+          cursor: pointer;
+        }
+      }
+      &:last-child {
+        border-bottom: none;
+      }
+    }
+  }
+  & .card__list__placeholder {
+    padding: 14px 20px;
+    font-style: italic;
+    font-size: 0.9em;
+  }
+  & .card__footer {
+    &.card__footer--padded {
+      padding: 12px;
+    }
+    &.card__footer--right {
+      text-align: right;
+    }
+  }
 }
 
-.card-full {
-  width: 100%;
+.card-heading {
+  font-size: 1.2em;
+  padding: 12px 20px;
+  text-transform: uppercase;
+  font-family: $heading-font-alt;
+  font-weight: bold;
+  border-radius: $card-border-radius $card-border-radius 0 0;
+  background-color: rgb(245, 245, 245);
+}
+
+.card-body {
+  padding: 16px 20px;
+}
+
+.card-list {
+  @include card;
+  & .card-list__item {
+    &.card-list__item--sm {
+      padding: 8px 16px;
+      font-size: 0.9em;
+    }
+    &.card-list__item--padded {
+      padding: 14px 20px;
+    }
+    &.card-list__item--hover:hover {
+      background-color: $lightest-grey;
+    }
+    & .card-list__item__text--padded {
+      padding: 14px 20px;
+    }
+    box-sizing: border-box;
+    flex-direction: row;
+    display: flex;
+    border-bottom: 1px solid $lighter-grey;
+    &.card-list__item--clickable:hover {
+      cursor: pointer;
+    }
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+  & .card-item-content {
+    border-bottom: 1px solid $lighter-grey;
+    &.card-item-content-padded {
+      padding: 12px 24px;
+      font-size: 0.9em;
+    }
+  }
+  &.card-list-full .card-item:last-child {
+    border-bottom: 1px solid $lighter-grey;
+  }
+}
+
+.card {
+  @include card;
+  &.card--centered {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  &.card--md {
+    max-width: 520px;
+  }
+  &.card--padded {
+    padding: 20px;
+  }
+}
+
+.card-body {
+  padding: 16px;
+}
+
+h1.card-title {
+  font-size: 1.6em;
+}
+
+.card-label {
+  text-transform: uppercase;
+  color: darken($grey, 18);
+  font-size: 10px;
+  margin-left: 8px;
+  margin-top: 8px;
+  margin-bottom: 2px;
+  letter-spacing: 0.2px;
+  text-align: left;
+  font-weight: normal;
+  &.card-label--centered {
+    text-align: center;
+  }
 }

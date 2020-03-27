@@ -1,0 +1,10 @@
+export const SIGNUP = 'signup';
+export const CUSTOMER_CREATED = 'customer_created';
+export const LOGIN_FAILED = 'login_failed';
+export const LOGIN_SUCCESS = 'login_success';
+export const INTEGRATION_CONNECTION_STARTED = 'integration_connection_started';
+export const INTEGRATION_DISCONNECTED = 'integration_disconnected';
+export const TEAM_MEMBER_INVITED = 'team_member_invited';
+export const ACCOUNT_CREATED = 'account_created';
+export const PAYMENT_CREATED = 'payment_created';
+export const AUTHORIZATION_COMPLETED = 'authorization_completed';

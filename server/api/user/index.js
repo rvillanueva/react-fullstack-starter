@@ -6,12 +6,19 @@ import * as auth from '../../auth/auth.service';
 
 var router = new Router();
 
-router.get('/', auth.hasRole('admin'), controller.index);
-router.delete('/:id', auth.hasRole('admin'), controller.destroy);
-router.get('/me', auth.isAuthenticated(), controller.me);
-router.put('/:id/password', auth.isAuthenticated(), controller.changePassword);
-router.put('/:id/role', auth.hasRole('admin'), controller.changeRole);
-router.get('/:id', auth.isAuthenticated(), controller.show);
 router.post('/', controller.create);
+router.post('/password/request', controller.requestPasswordReset);
+router.post('/password/reset', controller.resetPassword);
+router.get('/password/verify-token', controller.verifyResetToken);
+
+
+router.get('/me', auth.isAuthenticated(), controller.me);
+router.patch('/me', auth.isAuthenticated(), controller.updateMyProfile);
+router.get('/me/memberships', auth.isAuthenticated(), controller.myAccounts);
+router.put('/me/password', auth.isAuthenticated(), controller.changePassword);
+
+router.get('/', auth.hasGlobalRole('admin'), controller.index);
+router.delete('/:userId', auth.hasGlobalRole('admin'), controller.destroy);
+router.put('/:userId/role', auth.hasGlobalRole('admin'), controller.changeRole);
 
 module.exports = router;

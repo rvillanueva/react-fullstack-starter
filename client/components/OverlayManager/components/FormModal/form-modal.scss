@@ -1,0 +1,11 @@
+@import '../../../../styles/_variables';
+@import '../../../../styles/_mixins';
+
+.form-modal {
+  & .form-modal__text-input {
+    @include simple-input();
+  }
+  & .modal__body {
+    margin-top: 24px;
+  }
+}

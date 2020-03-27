@@ -1,0 +1,17 @@
+@import '../../styles/_variables';
+@import '../../styles/_mixins';
+
+.options-button {
+  @include normalized-button();
+  padding: 7px 14px 5px 14px;
+  text-align: center;
+  border-radius: 50%;
+  display: inline-block;
+  &:hover {
+    background-color: $lighter-grey;
+  }
+  & .options-button__icon {
+    font-size: 20px;
+    color: $text-color;
+  }
+}

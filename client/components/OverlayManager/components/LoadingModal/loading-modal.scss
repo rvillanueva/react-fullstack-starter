@@ -1,0 +1,19 @@
+@import '../../../../styles/_variables';
+@import '../../../../styles/_mixins';
+
+.loading-modal {
+  color: $light-grey;
+  padding: 32px;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+  height: 100%;
+  & .loader {
+    display: inline-block;
+    margin-bottom: 60px;
+  }
+  &.ball-scale-ripple > div {
+    height: 86px;
+    width: 86px;
+  }
+}

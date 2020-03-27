@@ -1,0 +1,40 @@
+p {
+  margin: 0;
+}
+
+.container {
+  width: 100%;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  padding: 42px 26px;
+  max-width: 600px;
+  box-sizing: border-box;
+  color: rgb(60, 60, 60);
+}
+
+.button {
+  padding: 14px 18px;
+  font-size: 1.1em;
+  text-transform: uppercase;
+  color: white;
+  text-decoration: none;
+  background-color: #4CBF9C;
+  border-radius: 6px;
+  margin-top: 4px;
+  margin-bottom: 4px;
+  display: inline-block;
+}
+
+.submit-button__container {
+  margin-top: 18px;
+  margin-bottom: 48px;
+}
+
+.text-fallback {
+  font-size: 0.8em;
+}
+
+.message {
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  white-space: pre-line;
+  font-style: italic;
+}

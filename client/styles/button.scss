@@ -1,27 +1,111 @@
 @import "_variables";
+@import "_mixins";
 
-.btn {
+a.btn,.btn {
+  position: relative;
+  outline: none;
   border: none;
-  border-radius: 32px;
+  border-radius: 4px;
   font-size: 1em;
   color: white;
   padding: 10px 24px;
   text-transform: uppercase;
+  transition: $button-background-color-transition;
+  display: inline-block;
+  text-decoration: none;
+  line-height: normal;
+  &.btn-sm {
+    font-size: 0.75em;
+    padding: 6px 11px;
+    border-radius: 3px;
+  }
+  &.btn-md {
+    border-radius: 4px;
+    font-size: 0.9em;
+    padding: 8px 14px;
+  }
+
+  &.btn-lg {
+    border-radius: 6px;
+    font-size: 0.9em;
+    padding: 12px 18px;
+  }
+
   &:hover {
     cursor: pointer;
+    outline: none;
+  }
+  &:hover:disabled {
+    cursor: default;
   }
 }
 
-.btn-default {
-  background-color: $light-grey;
+.btn-full {
+  width: 100%;
+  text-align: center;
+}
+
+.btn-full--left {
+  width: 100%;
+  text-align: left;
+}
+
+a.btn-default,.btn-default {
+  background-color: lighten($lighter-grey, 1);
+  color: $dark-grey;
   &:hover {
-    background-color: lighten($light-grey, 10);
+    background-color: darken($lighter-grey, 2);
   }
 }
 
-.btn-primary {
+.btn-muted {
+  background-color: transparent;
+  color: $dark-grey;
+  &:hover {
+    background-color: darken($lighter-grey, 5);
+  }
+}
+
+a.btn-primary,.btn-primary {
   background-color: $primary-accent;
   &:hover {
     background-color: lighten($primary-accent, 10);
   }
+  &:disabled {
+    background-color: lighten($primary-accent, 25);
+  }
+}
+
+.btn-secondary {
+  background-color: $secondary-accent;
+  &:hover {
+    background-color: lighten($secondary-accent, 10);
+  }
+  &:disabled {
+    background-color: lighten($secondary-accent, 25);
+  }
+}
+
+.btn-outline {
+  border: 1px solid $dark-grey;
+  color: $dark-grey;
+  &:disabled {
+    background-color: $grey;
+  }
+}
+
+.btn-clear {
+  color: $dark-grey;
+  &:hover {
+    color: $darkest-grey;
+    background-color: $lightest-grey;
+  }
+}
+
+.btn-full {
+  width: 100%;
+}
+
+.btn-spaced {
+  margin-bottom: 12px;
 }

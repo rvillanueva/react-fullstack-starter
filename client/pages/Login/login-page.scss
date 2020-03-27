@@ -1,0 +1,25 @@
+@import "../../styles/_variables";
+@import "../../styles/_mixins";
+
+.login-page {
+  padding: 36px;
+  padding-top: 90px;
+  & h1 {
+    margin-bottom: 8px;
+  }
+  & .login-card {
+    @include card;
+    text-align: left;
+    width: 440px;
+    padding: 36px;
+    margin-left: auto;
+    margin-right: auto;
+    & .form__label {
+      margin-top: 4px;
+    }
+  }
+  & .login-button {
+    width: 100%;
+    margin: 12px 0;
+  }
+}

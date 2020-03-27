@@ -1,0 +1,46 @@
+@import "../../styles/_variables";
+
+.dropdown {
+  display: inline-block;
+  position: relative;
+  & .dropdown__trigger {
+    &:hover {
+      cursor: pointer;
+    }
+  }
+  & .dropdown__content {
+    z-index: 999;
+    text-align: left;
+    position: absolute;
+    background-color: white;
+    border-radius: $card-border-radius;
+    padding: 6px 0;
+    box-sizing: content-box;
+    box-shadow: $card-box-shadow;
+    top: 40px;
+    border: 1px solid darken($lightest-grey, 5);
+    & .dropdown__option {
+      display: block;
+      font-size: 0.95em;
+      box-sizing: border-box;
+      white-space: pre;
+      max-width: 240px;
+      min-width: 100px;
+      padding: 6px 28px 6px 16px;
+      color: $text-color;
+      width: 100%;
+      font-weight: 400;
+      &:hover {
+        font-weight: 400;
+        background-color: $lightest-grey;
+        cursor: pointer;
+      }
+    }
+    & .dropdown__divider {
+      height: 1px;
+      border-top: 1px solid $lighter-grey;
+      margin: 2px 0;
+    }
+  }
+
+}

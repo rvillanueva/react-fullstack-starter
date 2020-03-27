@@ -4,10 +4,23 @@ import React from 'react';
 import { render } from 'react-dom';
 import { AppContainer } from 'react-hot-loader';
 import configureStore, { history } from './store/configureStore';
-import Root from './components/Root';
+import Root from './pages/Root';
 import './styles/app.scss'; // Yep, that's right. You can import SASS/CSS files too! Webpack will run the associated loader and plug this into the page.
-require('./favicon.ico'); // Tell webpack to load favicon.ico
+import './favicon.ico'; // Tell webpack to load favicon.ico
+import './styles/icons/fontawesome';
+import 'react-datepicker/dist/react-datepicker.css';
+import {setAuthorizationHeader} from './utils/axiosConfig';
+import * as Sentry from '@sentry/browser';
+
+if(process.env.SENTRY_DSN_FRONTEND) {
+  Sentry.init({
+    dsn: process.env.SENTRY_DSN_FRONTEND,
+    environment: process.env.DEPLOYMENT_NAME
+  });
+}
+
 const store = configureStore();
+setAuthorizationHeader();
 
 render(
   <AppContainer>
@@ -15,10 +28,10 @@ render(
   </AppContainer>,
   document.getElementById('app')
 );
-
-if (module.hot) {
-  module.hot.accept('./components/Root', () => {
-    const NewRoot = require('./components/Root').default;
+/*eslint-disable no-undef*/
+if(module.hot) {
+  module.hot.accept('./pages/Root', () => {
+    const NewRoot = Root;
     render(
       <AppContainer>
         <NewRoot store={store} history={history} />
@@ -27,3 +40,4 @@ if (module.hot) {
     );
   });
 }
+/*eslint-enable no-undef*/

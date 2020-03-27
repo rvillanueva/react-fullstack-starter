@@ -1,0 +1,33 @@
+@import "_mixins";
+@import "_variables";
+
+.tab__button__container {
+  margin-bottom: 8px;
+}
+
+.tab__button {
+  padding: 10px 18px;
+  font-family: $heading-font;
+  color: $dark-grey;
+  text-align: center;
+  outline: none;
+  background-color: transparent;
+  border: none;
+  font-weight: bold;
+  font-size: 1em;
+  &:not(:first-child ){
+    margin-left: 8px;
+  }
+  &:hover {
+    cursor: pointer;
+  }
+  &:hover:not(.active) {
+    background-color: lighten($light-grey, 3);
+    border-radius: 8px;
+  }
+  &.active {
+    color: $primary-accent;
+    font-weight: bold;
+    border-bottom: 2px solid $primary-accent;
+  }
+}
