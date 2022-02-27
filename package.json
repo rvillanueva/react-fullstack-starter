@@ -99,7 +99,7 @@
     "socketio-jwt": "^4.5.0",
     "sqlstring": "2.3.1",
     "url-join": "4.0.1",
-    "url-parse": "1.4.7",
+    "url-parse": "1.5.8",
     "uuid": "7.0.2",
     "validator": "13.0.0"
   },
